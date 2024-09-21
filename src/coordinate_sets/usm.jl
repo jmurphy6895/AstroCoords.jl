@@ -164,13 +164,13 @@ USMEM(X::AbstractArray{T,1}) where {T} = USMEM{T}(X...)
 function USMEM(C::CT, Rf1::R1, Rf2::R2, a1::A1, a2::A2, a3::A3) where {CT,R1,R2,A1,A2,A3}
     return USMEM{promote_type(CT, R1, R2, A1, A2, A3)}(C, Rf1, Rf2, a1, a2, a3)
 end
-(::Type{UE})(g::StaticVector) where {UE<:USMEM} = UE(g[1], g[2], g[3], g[4], g[5], g[6])
+(::Type{UET})(g::StaticVector) where {UET<:USMEM} = UET(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
 params(g::USMEM) = SVector{6}(g.C, g.Rf1, g.Rf2, g.a1, g.a2, g.a3)
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{UE}) where {UE<:USMEM} = UE(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+Base.one(::Type{UET}) where {UET<:USMEM} = UET(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
 function Base.getindex(p::USMEM, i::Int)

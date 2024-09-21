@@ -7,7 +7,7 @@ L - Canonical Keplerian Energy
 G - Canonical Total Angular Momentum
 H - Canonical Normal Angular Momentum (Relative to Equator)
 M - Mean Anomaly
-ω - Arugment of Periapsis
+ω - Argument of Periapsis
 Ω - Right Ascention of the Ascending Node
 
 Constructors
