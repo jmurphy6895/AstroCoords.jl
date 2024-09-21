@@ -132,7 +132,7 @@ Converts Keplerian Orbital Elements into the Unified State Model Set
 Van den Broeck, Michael. "An Approach to Generalizing Taylor Series Integration for Low-Thrust Trajectories." (2017).
 https://repository.tudelft.nl/islandora/object/uuid%3A2567c152-ab56-4323-bcfa-b076343664f9
 
-Arugments:
+Arguments:
 -'u:AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -168,7 +168,7 @@ Converts Unified State Model elements into the Keplerian Orbital Element Set
 Van den Broeck, Michael. "An Approach to Generalizing Taylor Series Integration for Low-Thrust Trajectories." (2017).
 https://repository.tudelft.nl/islandora/object/uuid%3A2567c152-ab56-4323-bcfa-b076343664f9
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -230,7 +230,7 @@ export USM72USM6
 
 Converts USM with Quaternions to USM with Modified Rodrigue Parameters
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -251,7 +251,7 @@ export USM62USM7
 
 Converts USM with Modified Rodrigue Parameters to USM with Quaternions
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': USM6 Vector [C; Rf1; Rf2; σ1; σ2; σ3]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -272,7 +272,7 @@ export USM72USMEM
 
 Converts USM with Quaternions to USM with Exponential Mapping
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -294,7 +294,7 @@ export USMEM2USM7
 
 Converts USM with Exponential Mapping to USM with Quaternions
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': USMEM Vector [C; Rf1; Rf2; a1; a2; a3, Φ]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -319,7 +319,7 @@ export koe2ModEq
 
 Converts Keplerian Elements into the Modified Equinoctial Elements
 
-Arugments:
+Arguments:
 -'u:AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -346,7 +346,7 @@ export ModEq2koe
 
 Converts Modified Equinoctial Elements into the Keplerian Elements
 
-Arugments:
+Arguments:
 -'u:AbstractVector{<:Number}': Modified Equinoctial State Vector [p; f; g; h; k; l] 
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -373,7 +373,7 @@ export koe2ModEqN
 
 Converts Keplerian Elements into the Modified Equinoctial Elements with Mean Motion
 
-Arugments:
+Arguments:
 -'u:AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -400,7 +400,7 @@ export ModEqN2koe
 
 Converts Modified Equinoctial Elements with Mean Motion into the Keplerian Elements
 
-Arugments:
+Arguments:
 -'u:AbstractVector{<:Number}': Modified Equinoctial State Vector [p; f; g; h; k; l] 
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -427,7 +427,7 @@ export cart2Mil
 
 Converts Cartesian State Vector into the Milankovich State
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż] 
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -482,7 +482,7 @@ export Mil2cart
 
 Converts Milankovich State Vector into the Cartesian State
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': Milankovich State Vector [H; e; L] 
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -553,7 +553,7 @@ export koeM2cart
 
 Converts Alternative Keplerian State Vector into the Cartesian State
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}': Alternative Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); M(Mean Anomaly)]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
@@ -572,7 +572,7 @@ export cart2koeM
 """
 Converts Cartesian State Vector into the Alternative Keplerian State Vector
 
-Arugments:
+Arguments:
 -'u::AbstractVector{<:Number}':  Cartesian State Vector [x; y; z; ẋ; ẏ; ż]  
 -'μ::Number': Standard Graviational Parameter of Central Body
 
