@@ -1,6 +1,6 @@
 export Coordinate
 """
-    abstract type AstroCoord{N, T} <: StaticArray{N, 1, T}
+    abstract type AstroCoord{N, T} <: StaticMatrix{N, 1, T}
 
 An abstract type representing a N-Dimensional Coordinate Set
 """
@@ -30,6 +30,7 @@ Base.convert(::Type{A}, coord::A) where {N,A<:Coordinate{N}} = coord
 Base.convert(::Type{A}, coord::Coordinate{N}) where {N,A<:Coordinate{N}} = A(coord)
 
 abstract type AstroCoord{N,T} <: Coordinate{N,T} end
+export params
 abstract type AttitudeCoord{N,T} <: Coordinate{N,T} end
 
 """

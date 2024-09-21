@@ -32,7 +32,7 @@ function cart2koe(
 
     #* Inclination
     k̂ = SVector{3}([0.0, 0.0, 1.0])
-    i = angle_between_vectorse(h, k̂)
+    i = angle_between_vectors(h, k̂)
 
     #* Semi-Major Axis
     a = 1.0 / (2.0 / rmag - vmag^2 / μ)
@@ -283,9 +283,9 @@ function USM72USMEM(u::AbstractVector{<:Number}, μ::Number)
     C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0 = u
 
     Φ = 2.0 * acos(η0)
-    a = [ϵO1; ϵO2; ϵO3]
+    a = [ϵO1; ϵO2; ϵO3] / sin(Φ / 2.0)
 
-    return [C; Rf1; Rf2; Φ .* a]
+    return [C; Rf1; Rf2; Φ * a]
 end
 
 export USMEM2USM7
@@ -434,7 +434,7 @@ Arugments:
 Returns:
 -'u_Mil::Vector{Number}': Milankovich State Vector [H; e; L] 
 """
-function cart2Mil(u::AbstractVector{<:Number}, μ::Number)
+function cart2Mil(u::AbstractVector{T}, μ::Number) where {T<:Number}
     r = u[1:3]
     v = u[4:6]
 
@@ -489,7 +489,7 @@ Arugments:
 Returns:
 -'u_cart::Vector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż] 
 """
-function Mil2cart(u::AbstractVector{<:Number}, μ::Number)
+function Mil2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     H = u[1:3]
     e = u[4:6]
     L = u[7]
@@ -580,11 +580,11 @@ Returns:
 -'u_cart::Vector{<:Number}': Alternative Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); M(Mean Anomaly)]
 """
 function cart2koeM(u::AbstractVector{<:Number}, μ::Number)
-    (a, e, i, Ω, ω, f) = cart2koe(u, μ)
+    a, e, i, Ω, ω, f = cart2koe(u, μ)
 
     M = trueAnomaly2MeanAnomaly(f, e)
 
-    return [a, e, i, Ω, ω, M]
+    return [a; e; i; Ω; ω; M]
 end
 
 export cart2cylind
@@ -604,13 +604,13 @@ Returns:
 function cart2cylind(u::AbstractVector{<:Number}, μ::Number)
     x, y, z, ẋ, ẏ, ż = u
 
-    r = norm([x; y; z])
+    ρ = norm([x; y])
     θ = atan(y, x)
 
-    ṙ = (x * ẋ + y * ẏ) / r
-    θdot = (x * ẏ - y * ẋ) / r
+    ρdot = (x * ẋ + y * ẏ) / ρ
+    θdot = (x * ẏ - y * ẋ) / ρ
 
-    return [r; θ; z; ṙ; θdot; ż]
+    return [ρ; θ; z; ρdot; θdot; ż]
 end
 
 export cylind2cart
@@ -628,13 +628,13 @@ Returns:
 *All Angles are in Radians
 """
 function cylind2cart(u::AbstractVector{<:Number}, μ::Number)
-    r, θ, z, ṙ, θdot, ż = u
+    ρ, θ, z, ρdot, θdot, ż = u
 
-    x = r * cos(θ)
-    y = r * sin(θ)
+    x = ρ * cos(θ)
+    y = ρ * sin(θ)
 
-    ẋ = ṙ * cos(θ) - θdot * sin(θ)
-    ẏ = ṙ * sin(θ) + θdot * cos(θ)
+    ẋ = ρdot * cos(θ) - θdot * sin(θ)
+    ẏ = ρdot * sin(θ) + θdot * cos(θ)
 
     return [x; y; z; ẋ; ẏ; ż]
 end
@@ -658,11 +658,11 @@ function cart2sphere(u::AbstractVector{<:Number}, μ::Number)
 
     r = norm([x; y; z])
     θ = atan(y, x)
-    ϕ = asin(z)
+    ϕ = acos(z / r)
 
     ṙ = (x * ẋ + y * ẏ + z * ż) / r
-    θdot = (x * ẏ - ẋ * y) / norm([x; y])
-    ϕdot = (ż * x^2 - ẋ * z * x + ż * y^2 - ẏ * z * y) / (√(1.0 - (z^2) / r) * r^1.5)
+    θdot = (x * ẏ - ẋ * y) / (x^2 + y^2)
+    ϕdot = (z * (x * ẋ + y * ẏ) - ż * (x^2 + y^2)) / (√(x^2.0 + y^2.0) * r^2)
 
     return [r; θ; ϕ; ṙ; θdot; ϕdot]
 end
@@ -684,32 +684,32 @@ Returns:
 function sphere2cart(u::AbstractVector{<:Number}, μ::Number)
     r, θ, ϕ, ṙ, θdot, ϕdot = u
 
-    x = r * cos(θ) * cos(ϕ)
-    y = r * sin(θ) * cos(ϕ)
-    z = r * sin(ϕ)
+    x = r * cos(θ) * sin(ϕ)
+    y = r * sin(θ) * sin(ϕ)
+    z = r * cos(ϕ)
 
-    ẋ = ṙ * cos(θ) * cos(ϕ) - r * θdot * sin(θ) * cos(ϕ) - ϕdot * r * cos(θ) * sin(ϕ)
-    ẏ = ṙ * sin(θ) * cos(ϕ) - r * ϕdot * sin(θ) * sin(ϕ) + r * θdot * cos(θ) * cos(ϕ)
-    ż = ṙ * sin(ϕ) + r * ϕdot * cos(ϕ)
+    ẋ = ṙ * cos(θ) * sin(ϕ) - r * θdot * sin(θ) * sin(ϕ) + r * ϕdot * cos(θ) * cos(ϕ)
+    ẏ = ṙ * sin(θ) * sin(ϕ) + r * θdot * cos(θ) * sin(ϕ) + r * ϕdot * sin(θ) * cos(ϕ)
+    ż = ṙ * cos(ϕ) - r * ϕdot * sin(ϕ)
 
     return [x; y; z; ẋ; ẏ; ż]
 end
 
-export cart2delauney
+export cart2delaunay
 """
-    cart2delauney(u::AbstractVector{<:Number}, μ::Number)
+    cart2delaunay(u::AbstractVector{<:Number}, μ::Number)
 
-Computes the Delauney Orbital Elements from a Cartesian Set
+Computes the Delaunay Orbital Elements from a Cartesian Set
 
 Arguments:
 -'u::AbstractVector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
 Returns:
--'u_cart::Vector{<:Number}': Delauney Orbital Element Vector [L; G; H; M; ω; Ω]
+-'u_cart::Vector{<:Number}': Delaunay Orbital Element Vector [L; G; H; M; ω; Ω]
 *All Angles are in Radians
 """
-function cart2delauney(u::AbstractVector{<:Number}, μ::Number)
+function cart2delaunay(u::AbstractVector{<:Number}, μ::Number)
     (a, e, i, Ω, ω, M) = cart2koeM(u, μ)
 
     L = √(μ * a)
@@ -719,22 +719,22 @@ function cart2delauney(u::AbstractVector{<:Number}, μ::Number)
     return [L; G; H; M; ω; Ω]
 end
 
-export delauney2cart
+export delaunay2cart
 """
-    delauney2cart(u::AbstractVector{<:Number}, μ::Number)
+    delaunay2cart(u::AbstractVector{<:Number}, μ::Number)
     
-Computes the Cartesian Orbital Elements from a Delauney Set
+Computes the Cartesian Orbital Elements from a Delaunay Set
 Laskar, Jacques. "Andoyer construction for Hill and Delaunay variables." Celestial Mechanics and Dynamical Astronomy 128.4 (2017): 475-482.
 
 Arguments:
--'u::AbstractVector{<:Number}': Delauney Orbital Element Vector [L; G; H; M; ω; Ω]
+-'u::AbstractVector{<:Number}': Delaunay Orbital Element Vector [L; G; H; M; ω; Ω]
 -'μ::Number': Standard Graviational Parameter of Central Body
 
 Returns:
 -'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
 *All Angles are in Radians
 """
-function delauney2cart(u::AbstractVector{<:Number}, μ::Number)
+function delaunay2cart(u::AbstractVector{<:Number}, μ::Number)
     L, G, H, M, ω, Ω = u
 
     a = L^2 / μ

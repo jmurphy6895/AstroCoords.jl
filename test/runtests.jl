@@ -2,5 +2,5 @@ using AstroCoords
 using Test
 
 @testset "AstroCoords.jl" begin
-    # Write your tests here.
+    include("test_coordinate_changes.jl")
 end

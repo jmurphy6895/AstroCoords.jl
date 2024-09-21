@@ -1,15 +1,16 @@
 module AstroCoords
 
 using LinearAlgebra
-using StaticArraysCore
+using StaticArrays
 
 include("utils.jl")
 include("./anomalies.jl")
+include("./attitude_changes.jl")
 include("./coordinate_changes.jl")
 include("./core_types.jl")
 
 include("./coordinate_sets/cartesian.jl")
-include("./coordinate_sets/delauney.jl")
+include("./coordinate_sets/delaunay.jl")
 include("./coordinate_sets/keplerian.jl")
 include("./coordinate_sets/milankovich.jl")
 include("./coordinate_sets/modEq.jl")

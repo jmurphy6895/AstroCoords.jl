@@ -251,7 +251,7 @@ CartesiantoSpherical = CartesiantoSphericalTransform()
 
 struct SphericaltoCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::SphericaltoCartesianTransform)(x::Cylindrical, μ::Number)
+@inline function (::SphericaltoCartesianTransform)(x::Spherical, μ::Number)
     return Cartesian(sphere2cart(params(x), μ))
 end
 
@@ -292,7 +292,7 @@ SphericaltoCylindrical = CartesiantoCylindrical ∘ SphericaltoCartesian
 struct CartesiantoDelaunayTransform <: AstroCoordTransformation end
 
 @inline function (::CartesiantoDelaunayTransform)(x::Cartesian, μ::Number)
-    return Delaunay(cart2delauney(params(x), μ))
+    return Delaunay(cart2delaunay(params(x), μ))
 end
 
 CartesiantoDelaunay = CartesiantoDelaunayTransform()
@@ -300,7 +300,7 @@ CartesiantoDelaunay = CartesiantoDelaunayTransform()
 struct DelaunaytoCartesianTransform <: AstroCoordTransformation end
 
 @inline function (::DelaunaytoCartesianTransform)(x::Delaunay, μ::Number)
-    return Cartesian(delauney2cart(params(x), μ))
+    return Cartesian(delaunay2cart(params(x), μ))
 end
 
 DelaunaytoCartesian = DelaunaytoCartesianTransform()
