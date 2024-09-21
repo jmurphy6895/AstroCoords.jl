@@ -6,7 +6,6 @@ using Test
     include("test_coordinate_changes.jl")
 end
 
-
 @testset "Aqua.jl" begin
     Aqua.test_all(AstroForceModels; ambiguities=(recursive = false))
 end
