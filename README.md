@@ -19,9 +19,9 @@ This package contains various propagators of satellite trajectories for the **HA
 - [x] Cylindrical
 - [x] Unified State Model
 - [x] Milankovich
-- [] EDROMO
-- [] Kustaanheimo-Stiefel
-- [] Stiefel-Scheifel
+- [ ] EDROMO
+- [ ] Kustaanheimo-Stiefel
+- [ ] Stiefel-Scheifel
 
 This package may eventually support Attitude Coordinates as well.
 
