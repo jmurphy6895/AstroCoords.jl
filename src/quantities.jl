@@ -10,10 +10,8 @@ Returns:
 - 'n::Number': Orbital Mean Motion
 """
 function meanMotion(a::Number, μ::Number)
-
-    return √(μ/(a^3))
+    return √(μ / (a^3.0))
 end
-
 
 export orbitalPeriod
 """
@@ -27,8 +25,7 @@ Returns:
 - 'T::Number': Orbital Period
 """
 function orbitalPeriod(a::Number, μ::Number)
-
-    return 2*π / √(μ/(a^3))
+    return 2.0 * π / √(μ / (a^3.0))
 end
 
 export orbitalNRG
@@ -44,9 +41,7 @@ Returns
 
 """
 function orbitalNRG(a::Number, μ::Number)
-
-    return -μ/(2.0*a)
-
+    return -μ / (2.0 * a)
 end
 
 export angularMomentumVector
@@ -60,9 +55,10 @@ Returns
 -'angular_momentum::Vector{<:Number}' - 3-Dimensional Angular Momemtum Vector
 """
 function angularMomentumVector(u::AbstractVector{<:Number})
+    r = SVector{3}(u[1], u[2], u[3])
+    v = SVector{3}(u[4], u[5], u[6])
 
-    return cross(@view(u[1:3]), @view(u[4:6]))
-
+    return cross(r, v)
 end
 
 export angularMomentumQuantity
@@ -76,10 +72,8 @@ Returns
 -'angular_momentum::Number' - Norm of Angular Momentum Vector
 """
 function angularMomentumQuantity(u::AbstractVector{<:Number})
-
     return norm(angularMomentumVector(u))
-
-end  
+end
 
 export meanMotion
 """
@@ -93,11 +87,9 @@ Returns:
 - 'n::Number': Orbital Mean Motion
 """
 function meanMotion(X::AstroCoord, μ::Number)
-
     kep = Keplerian(X, μ)
 
     return meanMotion(kep.a, μ)
-    
 end
 
 export orbitalPeriod
@@ -112,11 +104,9 @@ Returns:
 - 'T::Number': Orbital Period
 """
 function orbitalPeriod(X::AstroCoord, μ::Number)
-
     kep = Keplerian(X, μ)
 
     return orbitalPeriod(kep.a, μ)
-    
 end
 
 export orbitalNRG
@@ -132,11 +122,9 @@ Returns
 
 """
 function orbitalNRG(X::AstroCoord, μ::Number)
-
     kep = Keplerian(X, μ)
 
     return orbitalNRG(kep.a, μ)
-
 end
 
 export angularMomentumVector
@@ -151,11 +139,9 @@ Returns
 -'angular_momentum::Vector{<:Number}' - 3-Dimensional Angular Momemtum Vector
 """
 function angularMomentumVector(X::AstroCoord, μ::Number)
-
     cart = Cartesian(X, μ)
 
     return angularMomentumVector(params(cart))
-    
 end
 
 export angularMomentumQuantity
@@ -170,9 +156,7 @@ Returns
 -'angular_momentum::Number' - Norm of Angular Momentum Vector
 """
 function angularMomentumQuantity(X::AstroCoord, μ::Number)
-
     cart = Cartesian(X, μ)
 
     return angularMomentumQuantity(params(cart))
-
 end
