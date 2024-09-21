@@ -29,8 +29,8 @@ end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
 Delaunay(X::AbstractVector{T}) where {T} = Delaunay{T}(X...)
-function Delaunay(L::LT, G::GT, H::HT, M::MT, ω::OT, Ω::OmT) where {LT,GT,HT,MT,OT,OmT}
-    return Delaunay{promote_type(LT, GT, HT, MT, OT, Omt)}(L, G, H, M, ω, Ω)
+function Delaunay(L::LT, G::GT, H::HT, M::MT, ω::PT, Ω::OmT) where {LT,GT,HT,MT,PT,OmT}
+    return Delaunay{promote_type(LT, GT, HT, MT, PT, Omt)}(L, G, H, M, ω, Ω)
 end
 (::Type{D})(g::StaticVector) where {D<:Delaunay} = D(g[1], g[2], g[3], g[4], g[5], g[6])
 
