@@ -92,7 +92,7 @@ Returns
 function trueAnomaly2EccentricAnomaly(f::Number, e::Number)
     E = atan((sin(f) * √(1 - e^2)) / (1.0 + e * cos(f)), (e + cos(f)) / (1.0 + e * cos(f)))
 
-    E = rem2pi(M, RoundDown)
+    E = rem2pi(E, RoundDown)
 
     return E
 end
