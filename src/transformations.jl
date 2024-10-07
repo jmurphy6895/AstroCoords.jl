@@ -114,7 +114,7 @@ USMEMtoKeplerian = USM7toKeplerian ∘ USMEMtoUSM7
 
 # ~~~~~~~~~~~~~~~ USM6 <=> USMEM ~~~~~~~~~~~~~~~ #
 USM6toUSMEM = USM7toUSMEM ∘ USM6toUSM7
-USMEMtoKeplerian = USM7toUSM6 ∘ USMEMtoUSM7
+USMEMtoUSM6 = USM7toUSM6 ∘ USMEMtoUSM7
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> Milankovich ~~~~~~~~~~~~~~~ #
 struct CartesiantoMilankovichTransform <: AstroCoordTransformation end
@@ -357,7 +357,7 @@ Cartesian(X::Delaunay, μ::Number) = DelaunaytoCartesian(X, μ)
 Keplerian(X::Keplerian, μ::Number) = X
 Keplerian(X::Cartesian, μ::Number) = CartesiantoKeplerian(X, μ)
 Keplerian(X::USM7, μ::Number) = USM7toKeplerian(X, μ)
-Keplerian(X::USM6, μ::Number) = USM6toKepleriann(X, μ)
+Keplerian(X::USM6, μ::Number) = USM6toKeplerian(X, μ)
 Keplerian(X::USMEM, μ::Number) = USMEMtoKeplerian(X, μ)
 Keplerian(X::Milankovich, μ::Number) = MilankovichtoKeplerian(X, μ)
 Keplerian(X::ModEq, μ::Number) = ModifiedEquinoctialtoKeplerian(X, μ)
