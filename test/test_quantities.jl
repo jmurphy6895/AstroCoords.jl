@@ -1,5 +1,4 @@
 @testset "Test Quantities" begin
-
     state = [
         -1076.225324679696
         -6765.896364327722
@@ -16,11 +15,11 @@
     NRG = orbitalNRG(cart_state, μ)
     h_vec = angularMomentumVector(cart_state, μ)
     h = angularMomentumQuantity(cart_state, μ)
-    
+
     # Regression Tests
-    @test NRG ≈ -8.146487030627135 rtol=1e-14
-    @test h_vec ≈ [6937.269116080104; -4387.938522053871; 66872.35998509153] rtol=1e-14
-    @test h ≈ 67374.26984567562 rtol=1e-14
+    @test NRG ≈ -8.146487030627135 rtol = 1e-14
+    @test h_vec ≈ [6937.269116080104; -4387.938522053871; 66872.35998509153] rtol = 1e-14
+    @test h ≈ 67374.26984567562 rtol = 1e-14
 
     coordinate_sets = [
         Cartesian,
@@ -41,9 +40,8 @@
         h_vec2 = angularMomentumVector(coord_state, μ)
         h2 = angularMomentumQuantity(coord_state, μ)
 
-        @test NRG ≈ NRG2 rtol=1e-14
-        @test h_vec ≈ h_vec2 rtol=1e-14
-        @test h ≈ h rtol=1e-14
+        @test NRG ≈ NRG2 rtol = 1e-14
+        @test h_vec ≈ h_vec2 rtol = 1e-14
+        @test h ≈ h rtol = 1e-14
     end
 end
-
