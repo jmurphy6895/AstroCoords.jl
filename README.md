@@ -19,6 +19,7 @@ This package contains various propagators of satellite trajectories for the **HA
 - [x] Cylindrical
 - [x] Unified State Model
 - [x] Milankovich
+- [ ] J2 Modified Equinoctial
 - [ ] EDROMO
 - [ ] Kustaanheimo-Stiefel
 - [ ] Stiefel-Scheifel
