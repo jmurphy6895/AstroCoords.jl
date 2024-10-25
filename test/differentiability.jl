@@ -38,7 +38,7 @@ const _BACKENDS = (
     ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
     #("ReverseDiff", AutoReverseDiff()), #! Problem with normalize()
     #("Symbolics", AutoSymbolics()), #! Problem with normalize()
-    #("Tracker", AutoTracker()), #! Problem with AstroCoord Constuction, tries to convert TrackedReal to Float
+    #("Tracker", AutoTracker()), #! Problem with AstroCoord Construction, tries to convert TrackedReal to Float
     ("Zygote", AutoZygote()), #TODO: DiffInterface Zygote Doesn't Handle Constant Functions Yet (Stand-alone Zygote should work)
 )
 
