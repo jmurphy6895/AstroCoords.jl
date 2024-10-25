@@ -3,11 +3,12 @@ using Aqua
 using Test
 
 using DifferentiationInterface
-using ForwardDiff: ForwardDiff
-using Enzyme: Enzyme
-using FiniteDifferences: FiniteDifferences
-using PolyesterForwardDiff: PolyesterForwardDiff
-using Zygote: Zygote
+using Enzyme
+using FiniteDiff
+using FiniteDifferences
+using ForwardDiff
+using PolyesterForwardDiff
+using Zygote
 #TODO: GET THESE WORKING
 #import FastDifferentiation, Mooncake, ReverseDiff, Symbolics, Tracker
 
