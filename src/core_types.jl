@@ -4,19 +4,19 @@ export Coordinate
 
 An abstract type representing a N-Dimensional Coordinate Set
 """
-abstract type Coordinate{N,T} <: StaticMatrix{N,1,T} end
+abstract type Coordinate{N,T} <: StaticVector{N,T} end
 
-Base.@pure StaticArrays.Size(::Type{Coordinate{N}}) where {N} = Size(N, 1)
-Base.@pure StaticArrays.Size(::Type{Coordinate{N,T}}) where {N,T} = Size(N, 1)
+Base.@pure StaticArrays.Size(::Type{Coordinate{N}}) where {N} = Size(N)
+Base.@pure StaticArrays.Size(::Type{Coordinate{N,T}}) where {N,T} = Size(N)
 Base.@pure StaticArrays.Size(::Type{A}) where {A<:Coordinate} = Size(supertype(A))
 
-# Generate zero-matrix with SMatrix
+# Generate zero-matrix with SVector
 # Note that zeros(AstroCoord,dims...) is not Array{<:AstroCoord} but Array{<:StaticArray{N}}
-Base.zero(::Coordinate{N,T}) where {N,T} = @SMatrix zeros(T, N, 1)
+Base.zero(::Coordinate{N,T}) where {N,T} = @SVector zeros(T, N)
 Base.zero(::Type{Coordinate}) = error("The dimension of the Coordinate is not specified.")
-Base.zero(::Type{<:Coordinate{N}}) where {N} = @SMatrix zeros(N, 1)
-Base.zero(::Type{<:Coordinate{N,T}}) where {N,T} = @SMatrix zeros(T, N, 1)
-Base.zeros(::Type{A}) where {A<:Coordinate} = zeros(A, ()) # avoid StaticArray constructor
+Base.zero(::Type{<:Coordinate{N}}) where {N} = @SVector zeros(N)
+Base.zero(::Type{<:Coordinate{N,T}}) where {N,T} = @SVector zeros(T, N)
+Base.zeros(::Type{A}) where {A<:Coordinate} = zeros(A) # avoid StaticArray constructor
 function Base.zeros(::Type{A}, dims::Base.DimOrInd...) where {A<:Coordinate}
     return zeros(typeof(zero(A)), dims...)
 end

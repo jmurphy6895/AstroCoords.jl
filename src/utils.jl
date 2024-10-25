@@ -3,8 +3,8 @@
 ) where {T1,T2}
     T = promote_type(T1, T2)
 
-    unitv1 = SVector{length(v1),T1}(normalize(v1))
-    unitv2 = SVector{length(v2),T2}(normalize(v2))
+    unitv1 = normalize(v1)
+    unitv2 = normalize(v2)
 
     y = unitv1 - unitv2
     x = unitv1 + unitv2
