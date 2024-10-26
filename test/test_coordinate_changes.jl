@@ -1,17 +1,4 @@
 @testset "Round Trip Coordinate Changes" begin
-    coordinate_sets = [
-        Cartesian,
-        Delaunay,
-        Keplerian,
-        Milankovich,
-        ModEq,
-        Cylindrical,
-        Spherical,
-        USM7,
-        USM6,
-        USMEM,
-    ]
-
     state = [
         -1076.225324679696
         -6765.896364327722
@@ -25,7 +12,7 @@
 
     cart_state = Cartesian(state)
 
-    for coord in coordinate_sets
+    for coord in _COORDINATE_SETS
         coord_state = coord(cart_state, μ)
         cart_state_round_trip = Cartesian(coord_state, μ)
         @test params(cart_state) ≈ params(cart_state_round_trip)

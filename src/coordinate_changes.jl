@@ -20,25 +20,25 @@ function cart2koe(
 ) where {T<:Number}
     x, y, z, ẋ, ẏ, ż = u
 
-    r = SVector{3}(x, y, z)
-    v = SVector{3}(ẋ, ẏ, ż)
+    r = [x; y; z]
+    v = [ẋ; ẏ; ż]
 
     rmag = norm(r)
     vmag = norm(v)
 
     #* Angular Momentum
-    h = SVector{3}(cross(r, v))
+    h = cross(r, v)
     hmag = norm(h)
 
     #* Inclination
-    k̂ = SVector{3}([0.0, 0.0, 1.0])
+    k̂ = [0.0; 0.0; 1.0]
     i = angle_between_vectors(h, k̂)
 
     #* Semi-Major Axis
     a = 1.0 / (2.0 / rmag - vmag^2 / μ)
 
     #* Eccentricity
-    e = SVector{3}(cross(v, h) / μ - r / rmag)
+    e = cross(v, h) / μ - r / rmag
     emag = norm(e)
 
     #* RAAN, AOP, True Anomaly
