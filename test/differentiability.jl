@@ -4,17 +4,14 @@
 #
 ########################################################################################
 # Currently Supported:
-# Enzyme, ForwardDiff, FiniteDiff, FiniteDifferences, PolyesterForwardDiff
+# ForwardDiff, FiniteDiff, FiniteDifferences, PolyesterForwardDiff
 #
 # Partially Supported:
-# Zygote
+# Enzyme, Zygote
 #
 # Not Yet Supported:
 # FastDifferentiation, Mooncake, ReverseDiff, Symbolics, Tracker
 ########################################################################################
-using AstroCoords
-using Test
-
 const _COORDINATE_SETS_DIFF = [
     #Cartesian, #TODO: Skipped for DifferentiationInterface -- Zygote
     Delaunay,
@@ -31,7 +28,7 @@ const _COORDINATE_SETS_DIFF = [
 const _BACKENDS = (
     ("ForwardDiff", AutoForwardDiff()),
     #("Diffractor", AutoDiffractor()), #! Error with iszero()?
-    ("Enzyme", AutoEnzyme()),
+    ("Enzyme", AutoEnzyme()), #! Failing on Julia 1.11, but not Julia 1.10
     #("FastDifferentiation", AutoFastDifferentiation()), #! Doesn't Yet Support if Statements
     ("FiniteDifferences", AutoFiniteDifferences(; fdm=FiniteDifferences.central_fdm(5, 1))),
     #("Mooncake", AutoMooncake(;config=nothing)), #! Problem with StaticVector
