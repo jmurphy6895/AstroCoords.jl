@@ -4,11 +4,8 @@ authors = ["Jordan Murphy <jmurphy6895@gmail.com> and contributors"]
 version = "0.1.1"
 
 [deps]
-ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [weakdeps]
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
@@ -19,6 +16,7 @@ AstroCoordsZygoteExt = "Zygote"
 
 [compat]
 Aqua = "0.8"
+ChainRulesCore = "1.25"
 DifferentiationInterface = "0.6"
 Enzyme = "0.13"
 FiniteDiff = "2.26"
@@ -33,7 +31,6 @@ julia = "1.10"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
-ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 DifferentiationInterface = "a0c0ee7d-e4b9-4e03-894e-1c5f64a51d63"
 Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 FiniteDiff = "6a86dc24-6348-571c-b903-95158fe2bd41"
@@ -41,7 +38,6 @@ FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 PolyesterForwardDiff = "98d1487c-24ca-40b6-b7ab-df2af84e126b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [targets]
 test = ["Aqua", "ChainRulesCore", "DifferentiationInterface", "Enzyme", "FiniteDiff", "FiniteDifferences", "ForwardDiff", "PolyesterForwardDiff", "Test", "Zygote"]

@@ -2,6 +2,7 @@ using AstroCoords
 using Aqua
 using Test
 
+using ChainRulesCore
 using DifferentiationInterface
 using Enzyme
 using FiniteDiff

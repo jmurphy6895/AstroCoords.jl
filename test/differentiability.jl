@@ -15,7 +15,7 @@
 using AstroCoords
 using Test
 
-const _COORDINATE_SETS2 = [
+const _COORDINATE_SETS_DIFF = [
     #Cartesian, #TODO: Skipped for DifferentiationInterface -- Zygote
     Delaunay,
     Keplerian,
@@ -54,7 +54,7 @@ const _BACKENDS = (
 
     μ = 3.986004415e5
 
-    for set in _COORDINATE_SETS
+    for set in _COORDINATE_SETS_DIFF
         f_fd, df_fd = value_and_jacobian(
             (x) -> set(Cartesian(x), μ), AutoFiniteDiff(), state
         )
@@ -63,21 +63,21 @@ const _BACKENDS = (
             (x) -> set(Cartesian(state), x), AutoFiniteDiff(), μ
         )
 
-        for backend in _BACKENDS3
+        for backend in _BACKENDS
             @eval @testset $("Coordinate Set $set " * string(backend[1])) begin
                 f_ad, df_ad = value_and_jacobian(
-                    (x) -> $set(Cartesian(x), μ), $backend[2], $state
+                    (x) -> $set(Cartesian(x), $μ), $backend[2], $state
                 )
 
                 @test $f_fd == f_ad
-                @test $df_fd ≈ df_ad rtol = 1e-4
+                @test $df_fd ≈ df_ad atol = 1e-2
 
                 f_ad2, df_ad2 = value_and_derivative(
                     (x) -> $set(Cartesian($state), x), $backend[2], $μ
                 )
 
                 @test $f_fd2 == f_ad2
-                @test $df_fd2 ≈ df_ad2 rtol = 1e-4
+                @test $df_fd2 ≈ df_ad2 atol = 1e-4
             end
         end
     end

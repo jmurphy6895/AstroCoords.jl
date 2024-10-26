@@ -2,15 +2,8 @@ module AstroCoordsZygoteExt
 
 using AstroCoords
 
-if isdefined(Base, :get_extension)
-    using Zygote
-    using ChainRulesCore: ChainRulesCore
-    import ChainRulesCore: Tangent, NoTangent, ProjectTo
-else
-    using ..Zygote
-    import ..Zygote.ChainRulesCore
-    import ..Zygote.ChainRulesCore: Tangent, NoTangent, ProjectTo
-end
+using Zygote.ChainRulesCore: ChainRulesCore
+import Zygote.ChainRulesCore: Tangent, NoTangent, ProjectTo
 
 function ChainRulesCore.rrule(
     new_coord::Type{<:AstroCoords.AstroCoord}, coord::AbstractArray
