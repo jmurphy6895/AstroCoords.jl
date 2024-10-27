@@ -1,10 +1,10 @@
 @inline function angle_between_vectors(
     v1::AbstractVector{T1}, v2::AbstractVector{T2}
-) where {T1,T2}
+) where {T1<:Number,T2<:Number}
     T = promote_type(T1, T2)
 
-    unitv1 = normalize(v1)
-    unitv2 = normalize(v2)
+    unitv1 = v1 ./ √(sum(abs2.(v1)))
+    unitv2 = v2 ./ √(sum(abs2.(v2)))
 
     y = unitv1 - unitv2
     x = unitv1 + unitv2

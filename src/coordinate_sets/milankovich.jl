@@ -27,29 +27,35 @@ struct Milankovich{T} <: AstroCoord{7,T}
     L::T
     @inline Milankovich{T}(hx, hy, hz, ex, ey, ez, L) where {T} =
         new{T}(hx, hy, hz, ex, ey, ez, L)
-    @inline Milankovich{T}(X::Milankovich) where {T} =
+    @inline Milankovich{T}(X::Milankovich{T}) where {T} =
         new{T}(X.hx, X.hy, X.hz, X.ex, X.ey, X.ez, X.L)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-Milankovich(X::AbstractArray{T,1}) where {T} = Milankovich{T}(X...)
+function Milankovich(X::AbstractVector{T}) where {T}
+    return Milankovich{T}(X[1], X[2], X[3], X[4], X[5], X[6], X[7])
+end
 function Milankovich(
     hx::HX, hy::HY, hz::HZ, ex::EX, ey::EY, ez::EZ, L::LT
 ) where {HX,HY,HZ,EX,EY,EZ,LT}
     return Milankovich{promote_type(HX, HY, HZ, EX, EY, EZ, LT)}(hx, hy, hz, ex, ey, ez, L)
 end
 function (::Type{M})(g::StaticVector) where {M<:Milankovich}
-    return Milankovich(g[1], g[2], g[3], g[4], g[5], g[6], g[7])
+    return M(g[1], g[2], g[3], g[4], g[5], g[6], g[7])
 end
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(M::Milankovich) = SVector{7}(M.hx, M.hy, M.hz, M.ex, M.ey, M.ez, M.L)
+function params(M::Milankovich{T}) where {T<:Number}
+    return SVector{7,T}(M.hx, M.hy, M.hz, M.ex, M.ey, M.ez, M.L)
+end
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{M}) where {M<:Milankovich} = M(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{M}; T::DataType=Float64) where {M<:Milankovich}
+    return M{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::Milankovich, i::Int)
+function Base.getindex(p::Milankovich{T}, i::Int) where {T<:Number}
     if i == 1
         return p.hx
     elseif i == 2
@@ -65,6 +71,6 @@ function Base.getindex(p::Milankovich, i::Int)
     elseif i == 7
         return p.L
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end

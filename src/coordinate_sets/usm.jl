@@ -27,12 +27,12 @@ struct USM7{T} <: AstroCoord{7,T}
     η0::T
     @inline USM7{T}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0) where {T} =
         new{T}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0)
-    @inline USM7{T}(p::USM7) where {T} =
+    @inline USM7{T}(p::USM7{T}) where {T} =
         new{T}(p.C, p.Rf1, p.Rf2, p.ϵO1, p.ϵO2, p.ϵO3, p.η0)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-USM7(X::AbstractArray{T,1}) where {T} = USM7{T}(X...)
+USM7(X::AbstractVector{T}) where {T} = USM7{T}(X[1], X[2], X[3], X[4], X[5], X[6], X[7])
 function USM7(
     C::CT, Rf1::R1, Rf2::R2, ϵO1::E1, ϵO2::E2, ϵO3::E3, η0::N
 ) where {CT,R1,R2,E1,E2,E3,N}
@@ -43,13 +43,17 @@ function (::Type{U7})(g::StaticVector) where {U7<:USM7}
 end
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(g::USM7) = SVector{7}(g.C, g.Rf1, g.Rf2, g.ϵO1, g.ϵO2, g.ϵO3, g.η0)
+function params(g::USM7{T}) where {T<:Number}
+    return SVector{7,T}(g.C, g.Rf1, g.Rf2, g.ϵO1, g.ϵO2, g.ϵO3, g.η0)
+end
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{U7}) where {U7<:USM7} = U7(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{U7}; T::DataType=Float64) where {U7<:USM7}
+    return U7{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::USM7, i::Int)
+function Base.getindex(p::USM7{T}, i::Int) where {T<:Number}
     if i == 1
         return p.C
     elseif i == 2
@@ -65,7 +69,7 @@ function Base.getindex(p::USM7, i::Int)
     elseif i == 7
         return p.η0
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end
 
@@ -95,24 +99,26 @@ struct USM6{T} <: AstroCoord{6,T}
     σ2::T
     σ3::T
     @inline USM6{T}(C, Rf1, Rf2, σ1, σ2, σ3) where {T} = new{T}(C, Rf1, Rf2, σ1, σ2, σ3)
-    @inline USM6{T}(p::USM6) where {T} = new{T}(p.C, p.Rf1, p.Rf2, p.σ1, p.σ2, p.σ3)
+    @inline USM6{T}(p::USM6{T}) where {T} = new{T}(p.C, p.Rf1, p.Rf2, p.σ1, p.σ2, p.σ3)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-USM6(X::AbstractArray{T,1}) where {T} = USM6{T}(X...)
+USM6(X::AbstractVector{T}) where {T} = USM6{T}(X[1], X[2], X[3], X[4], X[5], X[6])
 function USM6(C::CT, Rf1::R1, Rf2::R2, σ1::S1, σ2::S2, σ3::S3) where {CT,R1,R2,S1,S2,S3}
     return USM6{promote_type(CT, R1, R2, S1, S2, S3)}(C, Rf1, Rf2, σ1, σ2, σ3)
 end
 (::Type{U6})(g::StaticVector) where {U6<:USM6} = U6(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(g::USM6) = SVector{6}(g.C, g.Rf1, g.Rf2, g.σ1, g.σ2, g.σ3)
+params(g::USM6{T}) where {T<:Number} = SVector{6,T}(g.C, g.Rf1, g.Rf2, g.σ1, g.σ2, g.σ3)
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{U6}) where {U6<:USM6} = U6(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{U6}; T::DataType=Float64) where {U6<:USM6}
+    return U6{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::USM6, i::Int)
+function Base.getindex(p::USM6{T}, i::Int) where {T<:Number}
     if i == 1
         return p.C
     elseif i == 2
@@ -126,7 +132,7 @@ function Base.getindex(p::USM6, i::Int)
     elseif i == 6
         return p.σ3
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end
 
@@ -156,24 +162,26 @@ struct USMEM{T} <: AstroCoord{6,T}
     a2::T
     a3::T
     @inline USMEM{T}(C, Rf1, Rf2, a1, a2, a3) where {T} = new{T}(C, Rf1, Rf2, a1, a2, a3)
-    @inline USMEM{T}(p::USMEM) where {T} = new{T}(p.C, p.Rf1, p.Rf2, p.a1, p.a2, p.a3)
+    @inline USMEM{T}(p::USMEM{T}) where {T} = new{T}(p.C, p.Rf1, p.Rf2, p.a1, p.a2, p.a3)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-USMEM(X::AbstractArray{T,1}) where {T} = USMEM{T}(X...)
+USMEM(X::AbstractVector{T}) where {T} = USMEM{T}(X[1], X[2], X[3], X[4], X[5], X[6])
 function USMEM(C::CT, Rf1::R1, Rf2::R2, a1::A1, a2::A2, a3::A3) where {CT,R1,R2,A1,A2,A3}
     return USMEM{promote_type(CT, R1, R2, A1, A2, A3)}(C, Rf1, Rf2, a1, a2, a3)
 end
 (::Type{UET})(g::StaticVector) where {UET<:USMEM} = UET(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(g::USMEM) = SVector{6}(g.C, g.Rf1, g.Rf2, g.a1, g.a2, g.a3)
+params(g::USMEM{T}) where {T<:Number} = SVector{6,T}(g.C, g.Rf1, g.Rf2, g.a1, g.a2, g.a3)
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{UET}) where {UET<:USMEM} = UET(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{UET}; T::DataType=Float64) where {UET<:USMEM}
+    return UET{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::USMEM, i::Int)
+function Base.getindex(p::USMEM{T}, i::Int) where {T<:Number}
     if i == 1
         return p.C
     elseif i == 2
@@ -187,6 +195,6 @@ function Base.getindex(p::USMEM, i::Int)
     elseif i == 6
         return p.a3
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end
