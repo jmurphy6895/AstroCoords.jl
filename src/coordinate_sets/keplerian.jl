@@ -24,24 +24,26 @@ struct Keplerian{T} <: AstroCoord{6,T}
     ω::T
     f::T
     @inline Keplerian{T}(a, e, i, Ω, ω, f) where {T} = new{T}(a, e, i, Ω, ω, f)
-    @inline Keplerian{T}(p::Keplerian) where {T} = new{T}(p.a, p.e, p.i, p.Ω, p.ω, p.f)
+    @inline Keplerian{T}(p::Keplerian{T}) where {T} = new{T}(p.a, p.e, p.i, p.Ω, p.ω, p.f)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-Keplerian(X::AbstractArray{T,1}) where {T} = Keplerian{T}(X...)
+Keplerian(X::AbstractVector{T}) where {T} = Keplerian{T}(X[1], X[2], X[3], X[4], X[5], X[6])
 function Keplerian(a::A, e::E, i::I, Ω::O, ω::W, f::F) where {A,E,I,O,W,F}
     return Keplerian{promote_type(A, E, I, O, W, F)}(a, e, i, Ω, ω, f)
 end
 (::Type{K})(g::StaticVector) where {K<:Keplerian} = K(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(g::Keplerian) = SVector{6}(g.a, g.e, g.i, g.Ω, g.ω, g.f)
+params(g::Keplerian{T}) where {T<:Number} = SVector{6,T}(g.a, g.e, g.i, g.Ω, g.ω, g.f)
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{K}) where {K<:Keplerian} = K(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{K}; T::DataType=Float64) where {K<:Keplerian}
+    return K{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::Keplerian, i::Int)
+function Base.getindex(p::Keplerian{T}, i::Int) where {T<:Number}
     if i == 1
         return p.a
     elseif i == 2
@@ -55,7 +57,7 @@ function Base.getindex(p::Keplerian, i::Int)
     elseif i == 6
         return p.f
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end
 

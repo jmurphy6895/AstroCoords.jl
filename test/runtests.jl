@@ -2,7 +2,6 @@ using AstroCoords
 using Aqua
 using Test
 
-using ChainRulesCore
 using DifferentiationInterface
 using Enzyme
 using FiniteDiff
@@ -12,6 +11,8 @@ using PolyesterForwardDiff
 using Zygote
 #TODO: GET THESE WORKING
 #import FastDifferentiation, Mooncake, ReverseDiff, Symbolics, Tracker
+
+using AllocCheck
 
 const _COORDINATE_SETS = [
     Cartesian,
@@ -29,7 +30,16 @@ const _COORDINATE_SETS = [
 @testset "AstroCoords.jl" begin
     include("test_coordinate_changes.jl")
     include("test_anomalies.jl")
-    include("differentiability.jl")
+    include("test_quantities.jl")
+end
+
+@testset "Differentiation" begin
+    include("test_differentiability.jl")
+end
+
+@testset "Code Performace" begin
+    include("test_JET.jl")
+    include("test_allocs.jl")
 end
 
 @testset "Aqua.jl" begin

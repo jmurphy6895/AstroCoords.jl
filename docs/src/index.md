@@ -1,7 +1,9 @@
 AstroCoords.jl
 ================================
 
-This package contains various propagators of satellite trajectories for the **HAMMERHEAD.jl** ecosystem. Currently this package implements:
+This package is intended to be a one stop shop for all things related to astrodynamics coordinate systems. In addition to being non-allocating and highly performant all transformations found here are also differentiable with compatibility with a number of different automatic and finite differencing schemas.
+
+Currently this package implements:
 - [x] Cartesian
 - [x] Keplerian
 - [x] Delaunay
@@ -10,9 +12,13 @@ This package contains various propagators of satellite trajectories for the **HA
 - [x] Cylindrical
 - [x] Unified State Model
 - [x] Milankovich
+- [ ] J2 Modified Equinoctial
 - [ ] EDROMO
 - [ ] Kustaanheimo-Stiefel
 - [ ] Stiefel-Scheifel
+
+This package may eventually support Attitude Coordinates as well.
+
 ## Installation
 
 ```julia

@@ -24,24 +24,26 @@ struct Delaunay{T} <: AstroCoord{6,T}
     ω::T
     Ω::T
     @inline Delaunay{T}(L, G, H, M, ω, Ω) where {T} = new{T}(L, G, H, M, ω, Ω)
-    @inline Delaunay{T}(p::Delaunay) where {T} = new{T}(p.L, p.G, p.H, p.M, p.ω, p.Ω)
+    @inline Delaunay{T}(p::Delaunay{T}) where {T} = new{T}(p.L, p.G, p.H, p.M, p.ω, p.Ω)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-Delaunay(X::AbstractVector{T}) where {T} = Delaunay{T}(X...)
+Delaunay(X::AbstractVector{T}) where {T} = Delaunay{T}(X[1], X[2], X[3], X[4], X[5], X[6])
 function Delaunay(L::LT, G::GT, H::HT, M::MT, ω::PT, Ω::OmT) where {LT,GT,HT,MT,PT,OmT}
-    return Delaunay{promote_type(LT, GT, HT, MT, PT, Omt)}(L, G, H, M, ω, Ω)
+    return Delaunay{promote_type(LT, GT, HT, MT, PT, OmT)}(L, G, H, M, ω, Ω)
 end
 (::Type{D})(g::StaticVector) where {D<:Delaunay} = D(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(g::Delaunay) = SVector{6}(g.L, g.G, g.H, g.M, g.ω, g.Ω)
+params(g::Delaunay{T}) where {T<:Number} = SVector{6,T}(g.L, g.G, g.H, g.M, g.ω, g.Ω)
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{D}) where {D<:Delaunay} = D(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{D}; T::DataType=Float64) where {D<:Delaunay}
+    return D{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::Delaunay, i::Int)
+function Base.getindex(p::Delaunay{T}, i::Int) where {T<:Number}
     if i == 1
         return p.L
     elseif i == 2
@@ -55,6 +57,6 @@ function Base.getindex(p::Delaunay, i::Int)
     elseif i == 6
         return p.Ω
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end

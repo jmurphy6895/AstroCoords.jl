@@ -24,24 +24,27 @@ struct Cartesian{T} <: AstroCoord{6,T}
     ẏ::T
     ż::T
     @inline Cartesian{T}(x, y, z, ẋ, ẏ, ż) where {T} = new{T}(x, y, z, ẋ, ẏ, ż)
-    @inline Cartesian{T}(p::Cartesian) where {T} = new{T}(p.x, p.y, p.z, p.ẋ, p.ẏ, p.ż)
+    @inline Cartesian{T}(p::Cartesian{T}) where {T} =
+        new{T}(p.x, p.y, p.z, p.ẋ, p.ẏ, p.ż)
 end
 
 # ~~~~~~~~~~~~~~~ Constructors ~~~~~~~~~~~~~~~ #
-Cartesian(X::AbstractArray{T,1}) where {T} = Cartesian{T}(X...)
+Cartesian(X::AbstractVector{T}) where {T} = Cartesian{T}(X[1], X[2], X[3], X[4], X[5], X[6])
 function Cartesian(x::X, y::Y, z::Z, ẋ::XV, ẏ::YV, ż::ZV) where {X,Y,Z,XV,YV,ZV}
     return Cartesian{promote_type(X, Y, Z, XV, YV, ZV)}(x, y, z, ẋ, ẏ, ż)
 end
 (::Type{C})(g::StaticVector) where {C<:Cartesian} = C(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
-params(g::Cartesian) = SVector{6}(g.x, g.y, g.z, g.ẋ, g.ẏ, g.ż)
+params(g::Cartesian{T}) where {T<:Number} = SVector{6,T}(g.x, g.y, g.z, g.ẋ, g.ẏ, g.ż)
 
 # ~~~~~~~~~~~~~~~ Initializers ~~~~~~~~~~~~~~~ #
-Base.one(::Type{C}) where {C<:Cartesian} = C(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+function Base.one(::Type{C}; T::DataType=Float64) where {C<:Cartesian}
+    return C{T}(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+end
 
 # ~~~~~~~~~~~~~~~ StaticArrays Interface ~~~~~~~~~~~~~~~ #
-function Base.getindex(p::Cartesian, i::Int)
+function Base.getindex(p::Cartesian{T}, i::Int) where {T<:Number}
     if i == 1
         return p.x
     elseif i == 2
@@ -55,6 +58,6 @@ function Base.getindex(p::Cartesian, i::Int)
     elseif i == 6
         return p.ż
     else
-        throw(BoundsError(r, i))
+        throw(BoundsError(p, i))
     end
 end

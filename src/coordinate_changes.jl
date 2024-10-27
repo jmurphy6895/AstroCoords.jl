@@ -13,15 +13,14 @@ Returns:
 *All Angles are in Radians
 """
 function cart2koe(
-    u::AbstractVector{T},
-    μ::Number;
-    equatorial_tol::Float64=1E-15,
-    circular_tol::Float64=1E-15,
-) where {T<:Number}
+    u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15
+) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+
     x, y, z, ẋ, ẏ, ż = u
 
-    r = [x; y; z]
-    v = [ẋ; ẏ; ż]
+    r = SVector{3}(x, y, z)
+    v = SVector{3}(ẋ, ẏ, ż)
 
     rmag = norm(r)
     vmag = norm(v)
@@ -31,7 +30,7 @@ function cart2koe(
     hmag = norm(h)
 
     #* Inclination
-    k̂ = [0.0; 0.0; 1.0]
+    k̂ = SVector{3,RT}(0.0, 0.0, 1.0)
     i = angle_between_vectors(h, k̂)
 
     #* Semi-Major Axis
@@ -82,7 +81,7 @@ function cart2koe(
         ω = rem2pi(atan(py, px) - f, RoundDown)
     end
 
-    return [a; emag; i; Ω; ω; f]
+    return SVector{6,RT}(a, emag, i, Ω, ω, f)
 end
 
 export koe2cart
@@ -99,7 +98,8 @@ Returns:
 -'u_cart::Vector{<:Number}': Keplerian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
 *All Angles are in Radians
 """
-function koe2cart(u::AbstractVector{<:Number}, μ::Number)
+function koe2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
     a, e, i, Ω, ω, f = u
 
     rmag = (a * (1.0 - e^2) / (1.0 + e * cos(f)))
@@ -121,7 +121,7 @@ function koe2cart(u::AbstractVector{<:Number}, μ::Number)
     ẏ = -μ / h * (sΩ * (sθ + e * sω) - cΩ * (cθ + e * cω) * ci)
     ż = μ / h * (cθ + e * cω) * si
 
-    return [x; y; z; ẋ; ẏ; ż]
+    return SVector{6,RT}(x, y, z, ẋ, ẏ, ż)
 end
 
 export koe2USM7
@@ -140,7 +140,8 @@ Returns:
 -'u_USM::Vector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
 *All Angles are in Radians
 """
-function koe2USM7(u::AbstractVector{<:Number}, μ::Number)
+function koe2USM7(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
     a, e, i, Ω, ω, f = u
 
     ##TODO: NEED TO ADD PARABOLIC CASE
@@ -157,7 +158,7 @@ function koe2USM7(u::AbstractVector{<:Number}, μ::Number)
     ϵO3 = cos(i / 2) * sin((Ω + u) / 2)
     η0 = cos(i / 2) * cos((Ω + u) / 2)
 
-    return [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
+    return SVector{7,T}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0)
 end
 
 export USM72koe
@@ -176,7 +177,8 @@ Returns:
 -'u_koe:Vector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)]
 *All Angles are in Radians
 """
-function USM72koe(u::AbstractVector{<:Number}, μ::Number)
+function USM72koe(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
     C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0 = u
 
     sinλ = (2.0 * ϵO3 * η0) / (ϵO3^2 + η0^2)
@@ -221,7 +223,7 @@ function USM72koe(u::AbstractVector{<:Number}, μ::Number)
         end
     end
 
-    return [a; e; i; Ω; ω; f]
+    return SVector{6,RT}(a, e, i, Ω, ω, f)
 end
 
 export USM72USM6
@@ -237,12 +239,14 @@ Arguments:
 Returns:
 -'u_USM6::Vector{Number}': USM6 State Vector [C; Rf1; Rf2; σ1; σ2; σ3]
 """
-function USM72USM6(u::AbstractVector{<:Number}, μ::Number)
+function USM72USM6(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0 = u
 
-    σ = EP2MRP([η0; ϵO1; ϵO2; ϵO3])
+    EPs = SVector{4}(η0, ϵO1, ϵO2, ϵO3)
 
-    return [C; Rf1; Rf2; σ]
+    σ = EP2MRP(EPs)
+
+    return SVector{6,T}(C, Rf1, Rf2, σ[1], σ[2], σ[3])
 end
 
 export USM62USM7
@@ -258,12 +262,14 @@ Arguments:
 Returns:
 -'u_USM::Vector{Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
 """
-function USM62USM7(u::AbstractArray{<:Number}, μ::Number)
+function USM62USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, σ1, σ2, σ3 = u
 
-    η0, ϵO1, ϵO2, ϵO3 = MRP2EP([σ1; σ2; σ3])
+    MRPs = SVector{3}(σ1, σ2, σ3)
 
-    return [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
+    η0, ϵO1, ϵO2, ϵO3 = MRP2EP(MRPs)
+
+    return SVector{7,T}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0)
 end
 
 export USM72USMEM
@@ -279,13 +285,15 @@ Arguments:
 Returns:
 -'u_USMEM::Vector{Number}': USMEM State Vector [C; Rf1; Rf2; a1; a2; a3, Φ]
 """
-function USM72USMEM(u::AbstractVector{<:Number}, μ::Number)
+function USM72USMEM(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0 = u
 
     Φ = 2.0 * acos(η0)
-    a = [ϵO1; ϵO2; ϵO3] / sin(Φ / 2.0)
+    a = SVector{3}(ϵO1 / sin(Φ / 2.0), ϵO2 / sin(Φ / 2.0), ϵO3 / sin(Φ / 2.0))
 
-    return [C; Rf1; Rf2; Φ * a]
+    em = Φ * a
+
+    return SVector{6,T}(C, Rf1, Rf2, em[1], em[2], em[3])
 end
 
 export USMEM2USM7
@@ -301,16 +309,16 @@ Arguments:
 Returns:
 -'u_USM::Vector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
 """
-function USMEM2USM7(u::AbstractVector{<:Number}, μ::Number)
+function USMEM2USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, a1, a2, a3 = u
 
-    a = [a1; a2; a3]
+    a = SVector{3}(a1, a2, a3)
     Φ = norm(a)
 
     ϵ = sin(Φ / 2.0) / Φ * a
     η0 = cos(Φ / 2.0)
 
-    return [C; Rf1; Rf2; ϵ; η0]
+    return SVector{7,T}(C, Rf1, Rf2, ϵ[1], ϵ[2], ϵ[3], η0)
 end
 
 export koe2ModEq
@@ -327,7 +335,7 @@ Returns:
 -'u_ModEq::Vector{<:Number}': Modified Equinoctial State Vector [p; f; g; h; k; l] 
 *All Angles are in Radians
 """
-function koe2ModEq(u::AbstractVector{<:Number}, μ::Number)
+function koe2ModEq(u::AbstractVector{T}, μ::Number) where {T<:Number}
     a, e, i, Ω, ω, ν = u
 
     p = a * (1 - e^2)
@@ -337,7 +345,7 @@ function koe2ModEq(u::AbstractVector{<:Number}, μ::Number)
     k = tan(i / 2) * sin(Ω)
     L = Ω + ω + ν
 
-    return [p; f; g; h; k; L]
+    return SVector{6,T}(p, f, g, h, k, L)
 end
 
 export ModEq2koe
@@ -354,7 +362,7 @@ Returns:
 -'u_koe::Vector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
 *All Angles are in Radians
 """
-function ModEq2koe(u::AbstractVector{<:Number}, μ::Number)
+function ModEq2koe(u::AbstractVector{T}, μ::Number) where {T<:Number}
     p, f, g, h, k, L = u
 
     a = p / (1 - f^2 - g^2)
@@ -362,63 +370,9 @@ function ModEq2koe(u::AbstractVector{<:Number}, μ::Number)
     i = atan(2 * √(h^2 + k^2), 1 - h^2 - k^2)
     Ω = atan(k, h)
     ω = atan(g * h - f * k, f * h + g * k)
-    ν = L - atan(g, f)
+    ν = L - Ω - ω
 
-    return [a; e; i; Ω; ω; ν]
-end
-
-export koe2ModEqN
-"""
-    koe2ModEqN(u::AbstractVector{<:Number}, μ::Number)
-
-Converts Keplerian Elements into the Modified Equinoctial Elements with Mean Motion
-
-Arguments:
--'u:AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
--'μ::Number': Standard Graviational Parameter of Central Body
-
-Returns:
--'u_ModEq::Vector{<:Number}': Modified Equinoctial State Vector [n; f; g; h; k; l] 
-*All Angles are in Radians
-"""
-function koe2ModEqN(u::AbstractVector{<:Number}, μ::Number)
-    a, e, i, Ω, ω, ν = u
-
-    n = √(μ / (a^3))
-    f = e * cos(ω + Ω)
-    g = e * sin(ω + Ω)
-    h = tan(i / 2) * cos(Ω)
-    k = tan(i / 2) * sin(Ω)
-    L = Ω + ω + ν
-
-    return [n; f; g; h; k; L]
-end
-
-export ModEqN2koe
-"""
-    ModEqN2koe(u::AbstractVector{<:Number}, μ::Number)
-
-Converts Modified Equinoctial Elements with Mean Motion into the Keplerian Elements
-
-Arguments:
--'u:AbstractVector{<:Number}': Modified Equinoctial State Vector [p; f; g; h; k; l] 
--'μ::Number': Standard Graviational Parameter of Central Body
-
-Returns:
--'u_koe::Vector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
-*All Angles are in Radians
-"""
-function ModEqN2koe(u::AbstractVector{<:Number}, μ::Number)
-    n, f, g, h, k, L = u
-
-    a = ∛(μ / (n^2))
-    e = √(f^2 + g^2)
-    i = atan(2 * √(h^2 + k^2), 1 - h^2 - k^2)
-    Ω = atan(k, h)
-    ω = atan(g * h - f * k, f * h + g * k)
-    ν = L - atan(g, f)
-
-    return [a; e; i; Ω; ω; ν]
+    return SVector{6,T}(a, e, i, Ω, ω, ν)
 end
 
 export cart2Mil
@@ -434,16 +388,17 @@ Arguments:
 Returns:
 -'u_Mil::Vector{Number}': Milankovich State Vector [H; e; L] 
 """
-function cart2Mil(u::AbstractVector{T}, μ::Number) where {T<:Number}
-    r = u[1:3]
-    v = u[4:6]
+function cart2Mil(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+    r = SVector{3}(u[1], u[2], u[3])
+    v = SVector{3}(u[4], u[5], u[6])
 
     H = cross(r, v)
     e = cross(v / μ, H) - r / norm(r)
 
-    x̂ = [1.0; 0.0; 0.0]
-    ŷ = [0.0; 1.0; 0.0]
-    ẑ = [0.0; 0.0; 1.0]
+    x̂ = SVector{3}(1.0, 0.0, 0.0)
+    ŷ = SVector{3}(0.0, 1.0, 0.0)
+    ẑ = SVector{3}(0.0, 0.0, 1.0)
 
     if abs(H[1]) > eps(T) || abs(H[2]) > eps(T)
         nΩ = cross(ẑ, H) / norm(cross(ẑ, H))
@@ -473,7 +428,7 @@ function cart2Mil(u::AbstractVector{T}, μ::Number) where {T<:Number}
         end
     end
 
-    return [H; e; L]
+    return SVector{7,RT}(H[1], H[2], H[3], e[1], e[2], e[3], L)
 end
 
 export Mil2cart
@@ -489,14 +444,15 @@ Arguments:
 Returns:
 -'u_cart::Vector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż] 
 """
-function Mil2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
-    H = u[1:3]
-    e = u[4:6]
+function Mil2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+    H = SVector{3}(u[1], u[2], u[3])
+    e = SVector{3}(u[4], u[5], u[6])
     L = u[7]
 
-    x̂ = [1.0; 0.0; 0.0]
-    ŷ = [0.0; 1.0; 0.0]
-    ẑ = [0.0; 0.0; 1.0]
+    x̂ = SVector{3}(1.0, 0.0, 0.0)
+    ŷ = SVector{3}(0.0, 1.0, 0.0)
+    ẑ = SVector{3}(0.0, 0.0, 1.0)
 
     if abs(H[1]) > eps(T) || abs(H[2]) > eps(T)
         nΩ = cross(ẑ, H) / norm(cross(ẑ, H))
@@ -544,47 +500,7 @@ function Mil2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     r = rmag * (cos(f) * ê + sin(f) * eperp)
     v = √(μ / p) * (-sin(f) * ê + (norm(e) + cos(f)) * eperp)
 
-    return [r; v]
-end
-
-export koeM2cart
-"""
-    koeM2cart(u::AbstractVector{<:Number}, μ::Number)
-
-Converts Alternative Keplerian State Vector into the Cartesian State
-
-Arguments:
--'u::AbstractVector{<:Number}': Alternative Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); M(Mean Anomaly)]
--'μ::Number': Standard Graviational Parameter of Central Body
-
-Returns:
--'u_cart::Vector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż] 
-"""
-function koeM2cart(u::AbstractVector{<:Number}, μ::Number)
-    a, e, i, Ω, ω, M = u
-
-    f = KeplerSolver(M, e)
-
-    return koe2cart([a; e; i; Ω; ω; f], μ)
-end
-
-export cart2koeM
-"""
-Converts Cartesian State Vector into the Alternative Keplerian State Vector
-
-Arguments:
--'u::AbstractVector{<:Number}':  Cartesian State Vector [x; y; z; ẋ; ẏ; ż]  
--'μ::Number': Standard Graviational Parameter of Central Body
-
-Returns:
--'u_cart::Vector{<:Number}': Alternative Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); M(Mean Anomaly)]
-"""
-function cart2koeM(u::AbstractVector{<:Number}, μ::Number)
-    a, e, i, Ω, ω, f = cart2koe(u, μ)
-
-    M = trueAnomaly2MeanAnomaly(f, e)
-
-    return [a; e; i; Ω; ω; M]
+    return SVector{6,RT}(r[1], r[2], r[3], v[1], v[2], v[3])
 end
 
 export cart2cylind
@@ -601,16 +517,18 @@ Returns:
 -'u_cylind::Vector{<:Number}': Cylindrical Orbital Element Vector [r; θ; z; ṙ; θdot; ż]
 *All Angles are in Radians
 """
-function cart2cylind(u::AbstractVector{<:Number}, μ::Number)
+function cart2cylind(u::AbstractVector{T}, μ::Number) where {T<:Number}
     x, y, z, ẋ, ẏ, ż = u
 
-    ρ = norm([x; y])
+    ρ_vec = SVector{2}(x, y)
+
+    ρ = norm(ρ_vec)
     θ = atan(y, x)
 
     ρdot = (x * ẋ + y * ẏ) / ρ
     θdot = (x * ẏ - y * ẋ) / ρ
 
-    return [ρ; θ; z; ρdot; θdot; ż]
+    return SVector{6,T}(ρ, θ, z, ρdot, θdot, ż)
 end
 
 export cylind2cart
@@ -627,7 +545,7 @@ Returns:
 -'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]  
 *All Angles are in Radians
 """
-function cylind2cart(u::AbstractVector{<:Number}, μ::Number)
+function cylind2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     ρ, θ, z, ρdot, θdot, ż = u
 
     x = ρ * cos(θ)
@@ -636,7 +554,7 @@ function cylind2cart(u::AbstractVector{<:Number}, μ::Number)
     ẋ = ρdot * cos(θ) - θdot * sin(θ)
     ẏ = ρdot * sin(θ) + θdot * cos(θ)
 
-    return [x; y; z; ẋ; ẏ; ż]
+    return SVector{6,T}(x, y, z, ẋ, ẏ, ż)
 end
 
 export cart2sphere
@@ -653,10 +571,12 @@ Returns:
 -'u_sphere::Vector{<:Number}': Spherical Orbital Element Vector [r; θ; ϕ; ṙ; θdot; ϕdot]
 *All Angles are in Radians
 """
-function cart2sphere(u::AbstractVector{<:Number}, μ::Number)
+function cart2sphere(u::AbstractVector{T}, μ::Number) where {T<:Number}
     x, y, z, ẋ, ẏ, ż = u
 
-    r = norm([x; y; z])
+    r_vec = SVector{3}(x, y, z)
+
+    r = norm(r_vec)
     θ = atan(y, x)
     ϕ = acos(z / r)
 
@@ -664,7 +584,7 @@ function cart2sphere(u::AbstractVector{<:Number}, μ::Number)
     θdot = (x * ẏ - ẋ * y) / (x^2 + y^2)
     ϕdot = (z * (x * ẋ + y * ẏ) - ż * (x^2 + y^2)) / (√(x^2.0 + y^2.0) * r^2)
 
-    return [r; θ; ϕ; ṙ; θdot; ϕdot]
+    return SVector{6,T}(r, θ, ϕ, ṙ, θdot, ϕdot)
 end
 
 export sphere2cart
@@ -681,7 +601,7 @@ Returns:
 -'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
 *All Angles are in Radians
 """
-function sphere2cart(u::AbstractVector{<:Number}, μ::Number)
+function sphere2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     r, θ, ϕ, ṙ, θdot, ϕdot = u
 
     x = r * cos(θ) * sin(ϕ)
@@ -692,7 +612,7 @@ function sphere2cart(u::AbstractVector{<:Number}, μ::Number)
     ẏ = ṙ * sin(θ) * sin(ϕ) + r * θdot * cos(θ) * sin(ϕ) + r * ϕdot * sin(θ) * cos(ϕ)
     ż = ṙ * cos(ϕ) - r * ϕdot * sin(ϕ)
 
-    return [x; y; z; ẋ; ẏ; ż]
+    return SVector{6,T}(x, y, z, ẋ, ẏ, ż)
 end
 
 export cart2delaunay
@@ -709,14 +629,16 @@ Returns:
 -'u_cart::Vector{<:Number}': Delaunay Orbital Element Vector [L; G; H; M; ω; Ω]
 *All Angles are in Radians
 """
-function cart2delaunay(u::AbstractVector{<:Number}, μ::Number)
-    (a, e, i, Ω, ω, M) = cart2koeM(u, μ)
+function cart2delaunay(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+    a, e, i, Ω, ω, f = cart2koe(u, μ)
+    M = trueAnomaly2MeanAnomaly(f, e)
 
     L = √(μ * a)
     G = L * √(1.0 - e^2)
     H = G * cos(i)
 
-    return [L; G; H; M; ω; Ω]
+    return SVector{6,RT}(L, G, H, M, ω, Ω)
 end
 
 export delaunay2cart
@@ -734,12 +656,18 @@ Returns:
 -'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
 *All Angles are in Radians
 """
-function delaunay2cart(u::AbstractVector{<:Number}, μ::Number)
+function delaunay2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+
     L, G, H, M, ω, Ω = u
 
     a = L^2 / μ
     e = √(1.0 - (G / L)^2)
     i = acos(H / G)
 
-    return koeM2cart([a; e; i; Ω; ω; M], μ)
+    f = meanAnomaly2TrueAnomaly(M, e)
+
+    u_koe = SVector{6,RT}(a, e, i, Ω, ω, f)
+
+    return koe2cart(u_koe, μ)
 end
