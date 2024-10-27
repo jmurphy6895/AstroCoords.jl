@@ -37,7 +37,7 @@ end
     include("test_differentiability.jl")
 end
 
-@testset "Code Performace" begin
+@testset "Code Performance" begin
     include("test_JET.jl")
     include("test_allocs.jl")
 end
