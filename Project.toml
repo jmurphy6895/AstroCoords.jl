@@ -42,4 +42,4 @@ PolyesterForwardDiff = "98d1487c-24ca-40b6-b7ab-df2af84e126b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["AllocCheck", "Aqua", "DifferentiationInterface", "Enzyme", "FiniteDiff", "FiniteDifferences", "ForwardDiff", "JET", "PolyesterForwardDiff", "Test"]
+test = ["AllocCheck", "Aqua", "DifferentiationInterface", "Enzyme", "FiniteDiff", "FiniteDifferences", "ForwardDiff", "JET", "PolyesterForwardDiff", "Test", "Zygote"]
