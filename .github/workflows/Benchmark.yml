@@ -1,9 +1,11 @@
 name: Benchmark a pull request
 
 on:
-  pull_request_target:
+  push:
     branches:
       - master
+    tags: ['*']
+  pull_request:
 concurrency:
   # Skip intermediate builds: always.
   # Cancel intermediate builds: only if it is a pull request build.
