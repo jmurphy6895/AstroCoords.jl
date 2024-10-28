@@ -1,6 +1,5 @@
-# ==============
-# benchmark body
-# ==============
+using AstroCoords
+using BenchmarkTools
 
 const SUITE = BenchmarkGroup()
 
