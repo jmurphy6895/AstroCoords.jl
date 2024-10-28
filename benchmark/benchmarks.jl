@@ -63,7 +63,7 @@ const _quantity_functions = [
     meanMotion, orbitalPeriod, orbitalNRG, angularMomentumVector, angularMomentumQuantity
 ]
 
-for f in _anomaly_conversions
+for f in _quantity_functions
     SUITE["quantities"][string(f), _cart_state, _μ] = @benchmarkable $(f)($_cart_state, $_μ)
 end
 
