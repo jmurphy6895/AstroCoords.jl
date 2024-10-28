@@ -56,7 +56,7 @@ const _e = 0.30230575359641376
 const _angle = 0.6441434680007933
 
 for f in _anomaly_conversions
-    SUITE["anomalies"][string(f), _angle, _e] = $(f)($_angle, $_e)
+    SUITE["anomalies"][string(f), _angle, _e] = @benchmarkable $(f)($_angle, $_e)
 end
 
 const _quantity_functions = [
@@ -64,7 +64,7 @@ const _quantity_functions = [
 ]
 
 for f in _anomaly_conversions
-    SUITE["quantities"][string(f), _cart_state, _μ] = $(f)($_cart_state, $_μ)
+    SUITE["quantities"][string(f), _cart_state, _μ] = @benchmarkable $(f)($_cart_state, $_μ)
 end
 
 # If a cache of tuned parameters already exists, use it, otherwise, tune and cache
