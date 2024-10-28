@@ -1,6 +1,17 @@
 export EP2MRP, MRP2EP
 
-function EP2MRP(β::AbstractVector{T}) where {T<:Number}
+"""
+    EP2MRP(β::AbstractVector{<:Number})
+
+Converts Euler Parameter rotation description into Modified Rodriguez Parameters.
+
+# Arguments
+- `β::AbstractVector{<:Number}`: The Euler Parameter description of a rotation.
+
+# Returns
+- `σ::AbstractVector{<:Number}`: The Modified Rodriguez Parameter description of a rotation.
+"""
+function EP2MRP(β::AbstractVector{<:Number})
     β0, β1, β2, β3 = β
 
     σ1 = β1 / (1.0 + β0)
@@ -18,7 +29,18 @@ function EP2MRP(β::AbstractVector{T}) where {T<:Number}
     return σ
 end
 
-function MRP2EP(σ::AbstractVector{T}) where {T<:Number}
+"""
+    MRP2EP(σ::AbstractVector{<:Number})
+
+Converts Modified Rodriguez Parameters rotation description into Euler Parameter.
+
+# Arguments
+- `σ::AbstractVector{<:Number}`: The Modified Rodriguez Parameter description of a rotation.
+
+# Returns
+- `β::AbstractVector{<:Number}`: The Euler Parameter description of a rotation.
+"""
+function MRP2EP(σ::AbstractVector{<:Number})
     σ_sq = sum(abs2.(σ))
 
     β0 = (1.0 - σ_sq) / (1.0 + σ_sq)
