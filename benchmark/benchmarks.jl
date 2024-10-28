@@ -73,8 +73,8 @@ end
 paramspath = joinpath(dirname(@__FILE__), "params.json")
 
 if isfile(paramspath)
-    loadparams!(suite, BenchmarkTools.load(paramspath)[1], :evals)
+    loadparams!(SUITE, BenchmarkTools.load(paramspath)[1], :evals)
 else
-    tune!(suite)
-    BenchmarkTools.save(paramspath, params(suite))
+    tune!(SUITE)
+    BenchmarkTools.save(paramspath, params(SUITE))
 end
