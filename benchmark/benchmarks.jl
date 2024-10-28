@@ -31,7 +31,7 @@ const _state = [
 
 const _μ = 3.986004415e5
 
-const _cart_state = Cartesian(state)
+const _cart_state = Cartesian(_state)
 
 for set in _COORDINATE_SETS
     suite["transformation"][string(set), _cart_state, _μ] = @benchmarkable $(f)(
