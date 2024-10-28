@@ -34,11 +34,11 @@ const _μ = 3.986004415e5
 const _cart_state = Cartesian(_state)
 
 for set in _COORDINATE_SETS
-    suite["transformation"][string(set), _cart_state, _μ] = @benchmarkable $(set)(
+    SUITE["transformation"][string(set), _cart_state, _μ] = @benchmarkable $(set)(
         $_cart_state, $_μ
     )
     new_coord = set(_cart_state, _μ)
-    suite["transformation"][string(set) * "reverse", new_coord, _μ] = @benchmarkable Cartesian(
+    SUITE["transformation"][string(set) * "reverse", new_coord, _μ] = @benchmarkable Cartesian(
         $new_coord, $_μ
     )
 end
@@ -56,7 +56,7 @@ const _e = 0.30230575359641376
 const _angle = 0.6441434680007933
 
 for f in _anomaly_conversions
-    suite["anomalies"][string(f), _angle, _e] = $(f)($_angle, $_e)
+    SUITE["anomalies"][string(f), _angle, _e] = $(f)($_angle, $_e)
 end
 
 const _quantity_functions = [
@@ -64,7 +64,7 @@ const _quantity_functions = [
 ]
 
 for f in _anomaly_conversions
-    suite["quantities"][string(f), _cart_state, _μ] = $(f)($_cart_state, $_μ)
+    SUITE["quantities"][string(f), _cart_state, _μ] = $(f)($_cart_state, $_μ)
 end
 
 # If a cache of tuned parameters already exists, use it, otherwise, tune and cache
