@@ -660,13 +660,16 @@ export delaunay2cart
 Computes the Cartesian orbital elements from a Delaunay set.
 Laskar, Jacques. "Andoyer construction for Hill and Delaunay variables." Celestial Mechanics and Dynamical Astronomy 128.4 (2017): 475-482.
 
+!!! note
+    All angles are in radians.
+
+
 # Argument
 -`u::AbstractVector{<:Number}`: The Delaunay orbital element vector [L; G; H; M; ω; Ω].
 -`μ::Number`: Standard graviational parameter of central body.
 
-# Return
--'u_cart::Vector{<:Number}': The cartesian orbital element vector [x; y; z; ẋ; ẏ; ż].
-*All Angles are in Radians
+# Returns
+-`u_cart::SVector{6, <:Number}``: The cartesian orbital element vector [x; y; z; ẋ; ẏ; ż].
 """
 function delaunay2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
