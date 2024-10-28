@@ -76,5 +76,5 @@ if isfile(paramspath)
     loadparams!(SUITE, BenchmarkTools.load(paramspath)[1], :evals)
 else
     tune!(SUITE)
-    BenchmarkTools.save(paramspath, params(SUITE))
+    BenchmarkTools.save(paramspath, BenchmarkTools.params(SUITE))
 end
