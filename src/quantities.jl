@@ -151,7 +151,7 @@ Computes the instantaneous angular momentum.
 -`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
 
 # Returns
--`angular_momentum::Number`: Anuglar momentum of the body.
+-`angular_momentum::Number`: Angular momentum of the body.
 """
 function angularMomentumQuantity(u::AbstractVector{<:Number})
     return norm(angularMomentumVector(u))
@@ -167,7 +167,7 @@ Computes the instantaneous angular momentum.
 -`μ::Number`: Standard graviational parameter of central body.
 
 # Returns
--`angular_momentum::Number`: Anuglar momentum of the body.
+-`angular_momentum::Number`: Angular momentum of the body.
 """
 function angularMomentumQuantity(X::AstroCoord, μ::Number)
     cart = Cartesian(X, μ)

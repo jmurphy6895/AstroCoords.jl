@@ -6,7 +6,7 @@ The Milankovitch orbital elements describe long-term variations in a planet's or
 *Image of Milankovich Orbital Elements [2]*
 
 ## Components
-The element set use the angular momentum vector and the eccentricity vector to define the orbit and uses the mean anomaly to descibe where in the orbit a body is
+The element set use the angular momentum vector and the eccentricity vector to define the orbit and uses the mean anomaly to describe where in the orbit a body is
 * **Angular Momentum Vector**
     * X-component of Angular Momentum Vector (hx) 
     * Y-component of Angular Momentum Vector (hy)

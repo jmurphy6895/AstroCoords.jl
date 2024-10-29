@@ -10,7 +10,7 @@ The Spherical Orbital Elements describe the position and velocity of an orbiting
 Similar to the Cartesian state vector, the spherical state vector consists of six elements, divided into position and velocity components:
 
 * **Position Vector (r)** – Describes the object’s location in 3D space relative to the origin (usually the center of the Earth):
-    * radial distance (r): 3D Euclidian distance from the origin
+    * radial distance (r): 3D Euclidean distance from the origin
     * in-plane angle (θ): in-plane angle from the positive x-axis to the radial vector
     * out-of-plane angle (ϕ): out-of-plane angle from the x-y plane to the radial vector
 
@@ -28,7 +28,7 @@ The Cylindrical Orbital Elements describe the state of an orbiting object using 
 
 ## Components
 * **Position Vector (r)** – Describes the object’s location in 3D space relative to the origin (usually the center of the Earth):
-    * in-plane radial distance (): 2D Euclidian distance from the origin in x-y plane
+    * in-plane radial distance (): 2D Euclidean distance from the origin in x-y plane
     * in-plane angle (θ): in-plane angle from the positive x-axis to the radial vector
     * out-of-plane distance (z): out-of-plane distance from the x-y plane
 

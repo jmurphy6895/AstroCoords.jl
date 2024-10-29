@@ -1,6 +1,6 @@
 # Quantities
 
-This package implments a number of interfaces to get common astrodynamics quantities regardless of coordinate definition used. All of these have a common interface where the function simply takes the AstroCoords struct and a gravitational parameter.
+This package implements a number of interfaces to get common astrodynamics quantities regardless of coordinate definition used. All of these have a common interface where the function simply takes the AstroCoords struct and a gravitational parameter.
 
 The quantities currently supported are:
 * meanMotion
