@@ -6,12 +6,21 @@ makedocs(;
     format=Documenter.HTML(;
         prettyurls=!("local" in ARGS), highlights=["yaml"], ansicolor=true
     ),
-    sitename="AstroCoordss.jl",
+    sitename="AstroCoords.jl",
     authors="Jordan Murphy",
     pages=[
         "Home" => "index.md",
         "Usage" => "man/usage.md",
-        "API" => "man/api.md",
+        "Coordinates" => Any[
+            "coordinates/cartesian.md",
+            "coordinates/delaunay.md",
+            "coordinates/keplerian.md",
+            "coordinates/milankovich.md",
+            "coordinates/modEq.md",
+            "coordinates/spherical.md",
+            "coordinates/usm.md",
+        ],
+        "Utilities" => Any["util/anomalies.md", "util/quantities.md"],
         "Library" => "lib/library.md",
     ],
 )

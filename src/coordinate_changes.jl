@@ -1,16 +1,23 @@
-export cart2koe
 """
-    cart2koe(u::AbstractVector{T}, μ::Number; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15)
+    function cart2koe(
+        u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15
+    ) where {T<:Number,V<:Number}
 
-Computes the Keplerian Orbital Elements from a Cartesian Set.
+Computes the Keplerian orbital elements from a cartesian set.
 
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_koe::Vector{<:Number}': Keplerian Orbital Element Vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)] 
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Keyword Arguments
+-`equatorial_tol::Float64`: The tolerance on what is considered an equatorial orbit (no inclination). [Default=1e-15]
+-`circular_tol::Float64`: The tolerance on what is considered a circular orbit (no eccentricity). [Default=1e-15]
+
+# Returns
+-`u_koe::SVector{6, <:Number}``: Keplerian orbital element vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)].
 """
 function cart2koe(
     u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15
@@ -84,19 +91,20 @@ function cart2koe(
     return SVector{6,RT}(a, emag, i, Ω, ω, f)
 end
 
-export koe2cart
 """
-    koe2cart(u::AbstractVector{<:Number}, μ::Number)
+    koe2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
 
-Computes the Cartesian Orbital Elements from a Keplerian Set.
+Computes the Cartesian orbital elements from a Keplerian set.
 
-Arguments:
--'u::AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)]  
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_cart::Vector{<:Number}': Keplerian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The Keplerian state vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_cart::Vector{6, <:Number}`: The Keplerian orbital element vector [x; y; z; ẋ; ẏ; ż].
 """
 function koe2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
@@ -124,21 +132,22 @@ function koe2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     return SVector{6,RT}(x, y, z, ẋ, ẏ, ż)
 end
 
-export koe2USM7
 """
-    koe2USM7(u::AbstractVector{<:Number}, μ::Number)
+    koe2USM7(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
 
-Converts Keplerian Orbital Elements into the Unified State Model Set
+Converts Keplerian orbital elements into the Unified State Model set.
 Van den Broeck, Michael. "An Approach to Generalizing Taylor Series Integration for Low-Thrust Trajectories." (2017).
 https://repository.tudelft.nl/islandora/object/uuid%3A2567c152-ab56-4323-bcfa-b076343664f9
 
-Arguments:
--'u:AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_USM::Vector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
-*All Angles are in Radians
+# Arguments
+-`u:AbstractVector{<:Number}`: The Keplerian state vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_USM::SVector{7, <:Number}`: The Unified State Model vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0].
 """
 function koe2USM7(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
@@ -158,24 +167,25 @@ function koe2USM7(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     ϵO3 = cos(i / 2) * sin((Ω + u) / 2)
     η0 = cos(i / 2) * cos((Ω + u) / 2)
 
-    return SVector{7,T}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0)
+    return SVector{7,RT}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0)
 end
 
-export USM72koe
 """
-    USM72koe(u::AbstractVector{<:Number}, μ::Number)
+    USM72koe(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
 
-Converts Unified State Model elements into the Keplerian Orbital Element Set
+Converts Unified State Model elements into the Keplerian orbital element set.
 Van den Broeck, Michael. "An Approach to Generalizing Taylor Series Integration for Low-Thrust Trajectories." (2017).
 https://repository.tudelft.nl/islandora/object/uuid%3A2567c152-ab56-4323-bcfa-b076343664f9
 
-Arguments:
--'u::AbstractVector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_koe:Vector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)]
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The Unified State Model vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_koe:SVector{6, <:Number}`: The Keplerian State vector [a; e; i; Ω(RAAN); ω(AOP); f(True Anomaly)].
 """
 function USM72koe(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
@@ -226,18 +236,17 @@ function USM72koe(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     return SVector{6,RT}(a, e, i, Ω, ω, f)
 end
 
-export USM72USM6
 """
-    USM72USM6(u::AbstractVector{<:Number}, μ::Number)
+    USM72USM6(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Converts USM with Quaternions to USM with Modified Rodrigue Parameters
+Converts USM with quaternions to USM with Modified Rodrigue Parameters.
 
-Arguments:
--'u::AbstractVector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
--'μ::Number': Standard Graviational Parameter of Central Body
+# Arguments
+-`u::AbstractVector{<:Number}`: The Unified State Model vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0].
+-`μ::Number`: Standard graviational parameter of central body.
 
-Returns:
--'u_USM6::Vector{Number}': USM6 State Vector [C; Rf1; Rf2; σ1; σ2; σ3]
+# Returns
+-`u_USM6::SVector{6, <:Number}`: The USM6 State vector [C; Rf1; Rf2; σ1; σ2; σ3].
 """
 function USM72USM6(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0 = u
@@ -249,18 +258,17 @@ function USM72USM6(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(C, Rf1, Rf2, σ[1], σ[2], σ[3])
 end
 
-export USM62USM7
 """
-    USM62USM7(u::AbstractArray{<:Number}, μ::Number)
+    USM62USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Converts USM with Modified Rodrigue Parameters to USM with Quaternions
+Converts USM with Modified Rodrigue Parameters to USM with quaternions.
 
-Arguments:
--'u::AbstractVector{<:Number}': USM6 Vector [C; Rf1; Rf2; σ1; σ2; σ3]
--'μ::Number': Standard Graviational Parameter of Central Body
+# Arguments
+-`u::AbstractVector{<:Number}`: The USM6 vector [C; Rf1; Rf2; σ1; σ2; σ3].
+-`μ::Number`: Standard graviational parameter of central body.
 
-Returns:
--'u_USM::Vector{Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
+# Returns
+-`u_USM::SVector{6, <:Number}`: The Unified State Model vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0].
 """
 function USM62USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, σ1, σ2, σ3 = u
@@ -272,18 +280,17 @@ function USM62USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{7,T}(C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0)
 end
 
-export USM72USMEM
 """
-    USM72USMEM(u::AbstractVector{<:Number}, μ::Number)
+    USM72USMEM(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Converts USM with Quaternions to USM with Exponential Mapping
+Converts USM with quaternions to USM with exponential mapping.
 
-Arguments:
--'u::AbstractVector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
--'μ::Number': Standard Graviational Parameter of Central Body
+# Arguments
+-`u::AbstractVector{<:Number}`: The Unified State Model vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0].
+-`μ::Number`: Standard graviational parameter of central body.
 
-Returns:
--'u_USMEM::Vector{Number}': USMEM State Vector [C; Rf1; Rf2; a1; a2; a3, Φ]
+# Returns
+-`u_USMEM::SVector{6, <:Number}`: The USMEM State Vector [C; Rf1; Rf2; a1; a2; a3, Φ].
 """
 function USM72USMEM(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, ϵO1, ϵO2, ϵO3, η0 = u
@@ -296,18 +303,17 @@ function USM72USMEM(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(C, Rf1, Rf2, em[1], em[2], em[3])
 end
 
-export USMEM2USM7
 """
-    USMEM2USM7(u::AbstractVector{<:Number}, μ::Number)
+    USMEM2USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Converts USM with Exponential Mapping to USM with Quaternions
+Converts USM with exponential mapping to USM with quaternions.
 
-Arguments:
--'u::AbstractVector{<:Number}': USMEM Vector [C; Rf1; Rf2; a1; a2; a3, Φ]
--'μ::Number': Standard Graviational Parameter of Central Body
+# Arguments
+-`u::AbstractVector{<:Number}`: The USMEM vector [C; Rf1; Rf2; a1; a2; a3, Φ].
+-`μ::Number`: Standard graviational parameter of central body.
 
-Returns:
--'u_USM::Vector{<:Number}': Unified State Model Vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0]
+# Returns
+-`u_USM::SVector{7, <:Number}`: The Unified State Model vector [C; Rf1; Rf2; ϵO1; ϵO2; ϵO3; η0].
 """
 function USMEM2USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
     C, Rf1, Rf2, a1, a2, a3 = u
@@ -321,19 +327,20 @@ function USMEM2USM7(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{7,T}(C, Rf1, Rf2, ϵ[1], ϵ[2], ϵ[3], η0)
 end
 
-export koe2ModEq
 """
-    koe2ModEq(u::AbstractVector{<:Number}, μ::Number)
+    koe2ModEq(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Converts Keplerian Elements into the Modified Equinoctial Elements
+Converts Keplerian elements into the Modified Equinoctial elements.
 
-Arguments:
--'u:AbstractVector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_ModEq::Vector{<:Number}': Modified Equinoctial State Vector [p; f; g; h; k; l] 
-*All Angles are in Radians
+# Arguments
+-`u:AbstractVector{<:Number}`: The Keplerian State vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_ModEq::SVector{6, <:Number}`: The Modified Equinoctial state vector [p; f; g; h; k; l].
 """
 function koe2ModEq(u::AbstractVector{T}, μ::Number) where {T<:Number}
     a, e, i, Ω, ω, ν = u
@@ -348,19 +355,20 @@ function koe2ModEq(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(p, f, g, h, k, L)
 end
 
-export ModEq2koe
 """
-    ModEq2koe(u::AbstractVector{<:Number}, μ::Number)
+    ModEq2koe(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Converts Modified Equinoctial Elements into the Keplerian Elements
+Converts Modified Equinoctial elements into the Keplerian elements.
 
-Arguments:
--'u:AbstractVector{<:Number}': Modified Equinoctial State Vector [p; f; g; h; k; l] 
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_koe::Vector{<:Number}': Keplerian State Vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)]
-*All Angles are in Radians
+# Arguments
+-`u:AbstractVector{<:Number}`: The Modified Equinoctial state vector [p; f; g; h; k; l].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_koe::SVector{6, <:Number}`: The Keplerian state vector [a; e; i; Ω(RAAN); ω(AOP); ν(True Anomaly)].
 """
 function ModEq2koe(u::AbstractVector{T}, μ::Number) where {T<:Number}
     p, f, g, h, k, L = u
@@ -375,18 +383,17 @@ function ModEq2koe(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(a, e, i, Ω, ω, ν)
 end
 
-export cart2Mil
 """
-    cart2Mil(u::AbstractVector{<:Number}, μ::Number)
+    cart2Mil(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
 
-Converts Cartesian State Vector into the Milankovich State
+Converts Cartesian state vector into the Milankovich state vector.
 
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż] 
--'μ::Number': Standard Graviational Parameter of Central Body
+# Arguments
+-`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
+-`μ::Number`: Standard graviational parameter of central body.
 
-Returns:
--'u_Mil::Vector{Number}': Milankovich State Vector [H; e; L] 
+# Returns
+-`u_Mil::SVector{7, <:Number}`: The Milankovich state vector [H; e; L]. 
 """
 function cart2Mil(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
@@ -431,18 +438,17 @@ function cart2Mil(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     return SVector{7,RT}(H[1], H[2], H[3], e[1], e[2], e[3], L)
 end
 
-export Mil2cart
 """
-   Mil2cart(u::AbstractVector{<:Number}, μ::Number)
+   Mil2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
 
-Converts Milankovich State Vector into the Cartesian State
+Converts Milankovich state vector into the Cartesian state vector.
 
-Arguments:
--'u::AbstractVector{<:Number}': Milankovich State Vector [H; e; L] 
--'μ::Number': Standard Graviational Parameter of Central Body
+# Arguments
+-`u::AbstractVector{<:Number}`: The Milankovich state vector [H; e; L].
+-`μ::Number`: Standard graviational parameter of central body.
 
-Returns:
--'u_cart::Vector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż] 
+# Returns
+-`u_cart::SVector{6, <:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
 """
 function Mil2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
@@ -503,19 +509,20 @@ function Mil2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     return SVector{6,RT}(r[1], r[2], r[3], v[1], v[2], v[3])
 end
 
-export cart2cylind
 """
-   cart2cylind(u::AbstractVector{<:Number}, μ::Number)
+   cart2cylind(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Computes the Cylindrical Orbital Elements from a Cartesian Set
+Computes the cylindrical orbital elements from a Cartesian set.
 
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż]  
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_cylind::Vector{<:Number}': Cylindrical Orbital Element Vector [r; θ; z; ṙ; θdot; ż]
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: Cartesian state vector [x; y; z; ẋ; ẏ; ż].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_cylind::SVector{6, <:Number}``: The cylindrical orbital element vector [r; θ; z; ṙ; θdot; ż].
 """
 function cart2cylind(u::AbstractVector{T}, μ::Number) where {T<:Number}
     x, y, z, ẋ, ẏ, ż = u
@@ -531,19 +538,20 @@ function cart2cylind(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(ρ, θ, z, ρdot, θdot, ż)
 end
 
-export cylind2cart
 """
-    cylind2cart(u::AbstractVector{<:Number}, μ::Number)
+    cylind2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Computes the Cartesian Orbital Elements from a Cylindrical Set
+Computes the Cartesian orbital elements from a cylindrical set.
 
-Arguments:
--'u::AbstractVector{<:Number}': Cylindrical State Vector [r; θ; z; ṙ; θdot; ż]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]  
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The cylindrical state vector [r; θ; z; ṙ; θdot; ż].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_cart::SVector{6, <:Number}`: The Cartesian orbital element vector [x; y; z; ẋ; ẏ; ż].
 """
 function cylind2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     ρ, θ, z, ρdot, θdot, ż = u
@@ -557,19 +565,20 @@ function cylind2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(x, y, z, ẋ, ẏ, ż)
 end
 
-export cart2sphere
 """
-    cart2sphere(u::AbstractVector{<:Number}, μ::Number)
+    cart2sphere(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Computes the Spherical Orbital Elements from a Spherical Set
+Computes the spherical orbital elements from a spherical set.
 
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż]  
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_sphere::Vector{<:Number}': Spherical Orbital Element Vector [r; θ; ϕ; ṙ; θdot; ϕdot]
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-'u_sphere::SVector{6, <:Number}': Spherical Orbital Element Vector [r; θ; ϕ; ṙ; θdot; ϕdot]
 """
 function cart2sphere(u::AbstractVector{T}, μ::Number) where {T<:Number}
     x, y, z, ẋ, ẏ, ż = u
@@ -587,19 +596,20 @@ function cart2sphere(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(r, θ, ϕ, ṙ, θdot, ϕdot)
 end
 
-export sphere2cart
 """
-    sphere2cart(u::AbstractVector{<:Number}, μ::Number)
+    sphere2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
 
-Computes the Cartesian Orbital Elements from a Spherical Set
+Computes the Cartesian orbital elements from a spherical set.
 
-Arguments:
--'u::AbstractVector{<:Number}': Spherical Orbital Element Vector [r; θ; ϕ; ṙ; θdot; ϕdot]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The spherical orbital element vector [r; θ; ϕ; ṙ; θdot; ϕdot].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-'u_cart::SVector{6, <:Number}': The Cartesian orbital element vector [x; y; z; ẋ; ẏ; ż].
 """
 function sphere2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     r, θ, ϕ, ṙ, θdot, ϕdot = u
@@ -615,19 +625,21 @@ function sphere2cart(u::AbstractVector{T}, μ::Number) where {T<:Number}
     return SVector{6,T}(x, y, z, ẋ, ẏ, ż)
 end
 
-export cart2delaunay
 """
-    cart2delaunay(u::AbstractVector{<:Number}, μ::Number)
+    cart2delaunay(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
 
-Computes the Delaunay Orbital Elements from a Cartesian Set
+Computes the Delaunay orbital elements from a Cartesian set.
+Laskar, Jacques. "Andoyer construction for Hill and Delaunay variables." Celestial Mechanics and Dynamical Astronomy 128.4 (2017): 475-482.
 
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_cart::Vector{<:Number}': Delaunay Orbital Element Vector [L; G; H; M; ω; Ω]
-*All Angles are in Radians
+# Arguments
+-`u::AbstractVector{<:Number}`: The Cartesian orbital element vector [x; y; z; ẋ; ẏ; ż].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-'u_cart::SVector{6, <:Number}': Delaunay Orbital Element Vector [L; G; H; M; ω; Ω]
 """
 function cart2delaunay(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
@@ -643,18 +655,21 @@ end
 
 export delaunay2cart
 """
-    delaunay2cart(u::AbstractVector{<:Number}, μ::Number)
+    delaunay2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     
-Computes the Cartesian Orbital Elements from a Delaunay Set
+Computes the Cartesian orbital elements from a Delaunay set.
 Laskar, Jacques. "Andoyer construction for Hill and Delaunay variables." Celestial Mechanics and Dynamical Astronomy 128.4 (2017): 475-482.
 
-Arguments:
--'u::AbstractVector{<:Number}': Delaunay Orbital Element Vector [L; G; H; M; ω; Ω]
--'μ::Number': Standard Graviational Parameter of Central Body
+!!! note
+    All angles are in radians.
 
-Returns:
--'u_cart::Vector{<:Number}': Cartesian Orbital Element Vector [x; y; z; ẋ; ẏ; ż]
-*All Angles are in Radians
+
+# Argument
+-`u::AbstractVector{<:Number}`: The Delaunay orbital element vector [L; G; H; M; ω; Ω].
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`u_cart::SVector{6, <:Number}``: The cartesian orbital element vector [x; y; z; ẋ; ẏ; ż].
 """
 function delaunay2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)

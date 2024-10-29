@@ -1,90 +1,31 @@
 export meanMotion
 """
-Computes the Keplerian Mean Motion About a Central Body
+    meanMotion(a::Number, μ::Number)
 
-Arguments:
-- 'a::Number': Semi-Major Axis
-- 'μ::Number': Standard Graviational Parameter of Central Body
+Computes the Keplerian mean motion about a central body.
 
-Returns:
-- 'n::Number': Orbital Mean Motion
+# Arguments
+-`a::Number`: The semi-major axis of the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+- `n::Number`: The orbital mean motion.
 """
 function meanMotion(a::Number, μ::Number)
     return √(μ / (a^3.0))
 end
 
-export orbitalPeriod
 """
-Computes the Keplerian Orbital Period About a Central Body
+    meanMotion(X::AstroCoord, μ::Number)
 
-Arguments:
-- 'a::Number': Semi-Major Axis
-- 'μ::Number': Standard Graviational Parameter of Central Body
+Computes the Keplerian mean motion about a central body.
 
-Returns:
-- 'T::Number': Orbital Period
-"""
-function orbitalPeriod(a::Number, μ::Number)
-    return 2.0 * π / √(μ / (a^3.0))
-end
+# Arguments
+-`X::AstroCoord`: An coordinate set describing the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
 
-export orbitalNRG
-"""
-Computes the Keplerian Orbital Energy
-
-Arguments:
--'a::Number': AstroCoord State Vector
--'μ::Number': Standard Graviational Parameter of Central Body
-
-Returns
--'NRG::Number' - Orbital energy 
-
-"""
-function orbitalNRG(a::Number, μ::Number)
-    return -μ / (2.0 * a)
-end
-
-export angularMomentumVector
-"""
-Computes the Instantaneous Angular Velocity Vector
-
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż]
-
-Returns
--'angular_momentum::Vector{<:Number}' - 3-Dimensional Angular Momemtum Vector
-"""
-function angularMomentumVector(u::AbstractVector{<:Number})
-    r = SVector{3}(u[1], u[2], u[3])
-    v = SVector{3}(u[4], u[5], u[6])
-
-    return cross(r, v)
-end
-
-export angularMomentumQuantity
-"""
-Computes the Instantaneous Angular Velocity Quantity
-
-Arguments:
--'u::AbstractVector{<:Number}': Cartesian State Vector [x; y; z; ẋ; ẏ; ż]
-
-Returns
--'angular_momentum::Number' - Norm of Angular Momentum Vector
-"""
-function angularMomentumQuantity(u::AbstractVector{<:Number})
-    return norm(angularMomentumVector(u))
-end
-
-export meanMotion
-"""
-Computes the Keplerian Mean Motion About a Central Body
-
-Arguments:
-- 'X::AstroCoord': Astro Coordinate 
-- 'μ::Number': Standard Graviational Parameter of Central Body
-
-Returns:
-- 'n::Number': Orbital Mean Motion
+# Returns
+- `n::Number`: The orbital mean motion.
 """
 function meanMotion(X::AstroCoord, μ::Number)
     kep = Keplerian(X, μ)
@@ -94,14 +35,32 @@ end
 
 export orbitalPeriod
 """
-Computes the Keplerian Orbital Period About a Central Body
+    orbitalPeriod(a::Number, μ::Number)
 
-Arguments:
-- 'X::AstroCoord': Astro Coordinate 
-- 'μ::Number': Standard Graviational Parameter of Central Body
+Computes the Keplerian orbital period about a central body.
 
-Returns:
-- 'T::Number': Orbital Period
+# Arguments
+-`a::Number`: The semi-major axis of the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`T::Number`: The orbital period.
+"""
+function orbitalPeriod(a::Number, μ::Number)
+    return 2.0 * π / √(μ / (a^3.0))
+end
+
+"""
+    orbitalPeriod(X::AstroCoord, μ::Number)
+
+Computes the Keplerian orbital period about a central body.
+
+# Arguments
+-`X::AstroCoord`: An coordinate set describing the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`T::Number`: The orbital period.
 """
 function orbitalPeriod(X::AstroCoord, μ::Number)
     kep = Keplerian(X, μ)
@@ -111,15 +70,32 @@ end
 
 export orbitalNRG
 """
-Computes the Keplerian Orbital Energy
+    orbitalNRG(a::Number, μ::Number)
 
-Arguments:
--'X::AstroCoord': Astro Coordinate 
--'μ::Number': Standard Graviational Parameter of Central Body
+Computes the keplerian orbital energy.
 
-Returns
--'NRG::Number' - Orbital energy 
+# Arguments
+-`a::Number`: The semi-major axis of the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
 
+# Returns
+-`NRG::Number`: The orbital energy. 
+"""
+function orbitalNRG(a::Number, μ::Number)
+    return -μ / (2.0 * a)
+end
+
+"""
+    orbitalNRG(X::AstroCoord, μ::Number)
+
+Computes the keplerian orbital energy.
+
+# Arguments
+-`X::AstroCoord`: An coordinate set describing the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`NRG::Number`: The orbital energy. 
 """
 function orbitalNRG(X::AstroCoord, μ::Number)
     kep = Keplerian(X, μ)
@@ -129,14 +105,34 @@ end
 
 export angularMomentumVector
 """
-Computes the Instantaneous Angular Velocity Vector
+    angularMomentumVector(u::AbstractVector{<:Number})
 
-Arguments:
--'X::AstroCoord': Astro Coordinate 
--'μ::Number': Standard Graviational Parameter of Central Body
+Computes the instantaneous angular momentum vector from a Cartesian state vector.
 
-Returns
--'angular_momentum::Vector{<:Number}' - 3-Dimensional Angular Momemtum Vector
+# Arguments
+-`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
+
+# Returns
+-'angular_momentum::Vector{<:Number}': 3-Dimensional angular momemtum vector.
+"""
+function angularMomentumVector(u::AbstractVector{<:Number})
+    r = SVector{3}(u[1], u[2], u[3])
+    v = SVector{3}(u[4], u[5], u[6])
+
+    return cross(r, v)
+end
+
+"""
+    angularMomentumVector(X::AstroCoord, μ::Number)
+
+Computes the instantaneous angular momentum vector from a Cartesian state vector.
+
+# Arguments
+-`X::AstroCoord`: An coordinate set describing the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`angular_momentum::Vector{<:Number}`: 3-Dimensional angular momemtum vector.
 """
 function angularMomentumVector(X::AstroCoord, μ::Number)
     cart = Cartesian(X, μ)
@@ -146,14 +142,31 @@ end
 
 export angularMomentumQuantity
 """
-Computes the Instantaneous Angular Velocity Quantity
+    angularMomentumQuantity(u::AbstractVector{<:Number})
 
-Arguments:
--'X::AstroCoord': Astro Coordinate 
--'μ::Number': Standard Graviational Parameter of Central Body
+Computes the instantaneous angular momentum.
 
-Returns
--'angular_momentum::Number' - Norm of Angular Momentum Vector
+# Arguments
+-`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
+
+# Returns
+-`angular_momentum::Number`: Angular momentum of the body.
+"""
+function angularMomentumQuantity(u::AbstractVector{<:Number})
+    return norm(angularMomentumVector(u))
+end
+
+"""
+    angularMomentumQuantity(X::AstroCoord, μ::Number)
+
+Computes the instantaneous angular momentum.
+
+# Arguments
+-`X::AstroCoord`: An coordinate set describing the orbit.
+-`μ::Number`: Standard graviational parameter of central body.
+
+# Returns
+-`angular_momentum::Number`: Angular momentum of the body.
 """
 function angularMomentumQuantity(X::AstroCoord, μ::Number)
     cart = Cartesian(X, μ)
