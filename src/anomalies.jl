@@ -157,7 +157,9 @@ Converts the mean anomaly into the true anomaly.
 # Returns
 -`f::Number`: Mean anomaly of the orbit [radians].
 """
-function meanAnomaly2TrueAnomaly(M::T, e::Number; tol::Float64=10 * eps(T)) where {T<:Number}
+function meanAnomaly2TrueAnomaly(
+    M::T, e::Number; tol::Float64=10 * eps(T)
+) where {T<:Number}
     return KeplerSolver(M, e; tol=tol)
 end
 
@@ -177,6 +179,8 @@ Converts the Mean Anomaly into the Eccentric Anomaly
 # Returns
 -`E::Number`: Eccentric Anomaly of the orbit [radians]
 """
-function meanAnomaly2EccentricAnomaly(M::T, e::Number; tol::Float64=10 * eps(T)) where {T<:Number}
+function meanAnomaly2EccentricAnomaly(
+    M::T, e::Number; tol::Float64=10 * eps(T)
+) where {T<:Number}
     return trueAnomaly2EccentricAnomaly(KeplerSolver(M, e; tol=tol), e)
 end
