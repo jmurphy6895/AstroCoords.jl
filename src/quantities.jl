@@ -140,7 +140,6 @@ function angularMomentumVector(X::AstroCoord, μ::Number)
     return angularMomentumVector(params(cart))
 end
 
-
 export angularMomentumQuantity
 """
     angularMomentumQuantity(u::AbstractVector{<:Number})
