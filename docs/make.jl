@@ -20,7 +20,7 @@ makedocs(;
             "coordinates/spherical.md",
             "coordinates/usm.md",
         ],
-        "Utilities" => Any["util/anomalies.md", "quantities.md"],
+        "Utilities" => Any["util/anomalies.md", "util/quantities.md"],
         "Library" => "lib/library.md",
     ],
 )
