@@ -16,7 +16,7 @@ The element set use the angular momentum vector and the eccentricity vector to d
     * Y-component of Eccentricity Vector (ey)
     * Z-component of Eccentricity Vector (ez)
 * **Mean Anomaly**
-    * Mean Anomaly (L): The angle between the satellite's current position and the periapsis, measured from the central body at a specific moment in time treated as thought the orbit was circular.
+    * True Longitude (L): The angle between the satellite's current position and the RAAN, and the angle between RAAN and the vernal equinox.
 
 ## References
 [1]: https://www.researchgate.net/publication/263032883_On_the_Milankovitch_orbital_elements_for_perturbed_Keplerian_motion#fullTextFileContent
