@@ -7,7 +7,7 @@ The Delaunay Orbital Elements are an alternative formulation of classical orbita
 
 ## Components
 
-The Delaunay variables are called action-angle coodinates as the Hamiltonian only depends on the action variables.
+The Delaunay variables are called action-angle coordinates as the Hamiltonian only depends on the action variables.
 
 * **Action Coordinates**
     * Canonical Keplerian Energy (L): Instaneous energy of the Keplerian orbit.
