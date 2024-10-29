@@ -2,7 +2,7 @@
 
 The Milankovitch orbital elements describe long-term variations in a planet's orbit around the Sun, primarily used to explain climate changes on Earth over tens of thousands to hundreds of thousands of years. These elements focus on how the shape, tilt, and orientation of Earth’s orbit change over time, impacting the amount and distribution of solar energy the planet receives. They are named after the Serbian scientist Milutin Milankovitch, who theorized that these variations drive cyclical climatic patterns, such as glacial and interglacial periods.
 
-![image](../assets/cartesian.png)
+![image](../assets/milan.jpg)
 *Image of Milankovich Orbital Elements [2]*
 
 ## Components
