@@ -20,6 +20,9 @@ Currently this package implements:
 - [x] Spherical
 - [x] Cylindrical
 - [x] Unified State Model
+    - [x] USM7
+    - [x] USM6
+    - [x] USMEM
 - [x] Milankovich
 - [ ] J2 Modified Equinoctial
 - [ ] EDROMO
