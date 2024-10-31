@@ -465,7 +465,7 @@ function Mil2cart(
 
     f = L - Ω - ω
 
-    a = (hmag^2) / (μ*(1 - emag^2))
+    a = (hmag^2) / (μ * (1 - emag^2))
     rmag = (a * (1.0 - emag^2) / (1.0 + emag * cos(f)))
 
     θ = ω + f
