@@ -400,7 +400,9 @@ Converts Cartesian state vector into the Milankovich state vector.
 # Returns
 -`u_Mil::SVector{7, <:Number}`: The Milankovich state vector [H; e; L]. 
 """
-function cart2Mil(u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15) where {T<:Number,V<:Number}
+function cart2Mil(
+    u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15
+) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     r = SVector{3}(u[1], u[2], u[3])
     v = SVector{3}(u[4], u[5], u[6])
