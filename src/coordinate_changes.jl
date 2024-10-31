@@ -410,7 +410,9 @@ function cart2Mil(
     H = cross(r, v)
     e = cross(v / μ, H) - r / norm(r)
 
-    _, _, _, Ω, ω, f = cart2koe(u, μ; equatorial_tol=equatorial_tol, circular_tol=circular_tol)
+    _, _, _, Ω, ω, f = cart2koe(
+        u, μ; equatorial_tol=equatorial_tol, circular_tol=circular_tol
+    )
     L = Ω + ω + f
 
     return SVector{7,RT}(H[1], H[2], H[3], e[1], e[2], e[3], L)
