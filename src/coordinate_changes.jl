@@ -392,10 +392,17 @@ Converts Cartesian state vector into the Milankovich state vector.
 -`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
 -`μ::Number`: Standard graviational parameter of central body.
 
+# Keyword Arguments
+-`equatorial_tol::Float64`: The tolerance on what is considered an equatorial orbit (no inclination). [Default=1e-15]
+-`circular_tol::Float64`: The tolerance on what is considered a circular orbit (no eccentricity). [Default=1e-15]
+
+
 # Returns
 -`u_Mil::SVector{7, <:Number}`: The Milankovich state vector [H; e; L]. 
 """
-function cart2Mil(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+function cart2Mil(
+    u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15
+) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     r = SVector{3}(u[1], u[2], u[3])
     v = SVector{3}(u[4], u[5], u[6])
@@ -403,37 +410,10 @@ function cart2Mil(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     H = cross(r, v)
     e = cross(v / μ, H) - r / norm(r)
 
-    x̂ = SVector{3}(1.0, 0.0, 0.0)
-    ŷ = SVector{3}(0.0, 1.0, 0.0)
-    ẑ = SVector{3}(0.0, 0.0, 1.0)
-
-    if abs(H[1]) > eps(T) || abs(H[2]) > eps(T)
-        nΩ = cross(ẑ, H) / norm(cross(ẑ, H))
-        Ω = atan(dot(ŷ, nΩ), dot(x̂, nΩ))
-        nΩperp = cross(H, nΩ / norm(H))
-
-        if norm(e) > eps(T)
-            ω = atan(dot(e, nΩperp), dot(e, nΩ))
-
-            eperp = cross(H, e) / (norm(H) * norm(e))
-            f = atan(dot(r, eperp), dot(r, e / norm(e)))
-
-            L = Ω + ω + f
-        else
-            L = Ω + atan(dot(r, nΩperp), dot(r, nΩ))
-        end
-    else
-        if norm(e) > eps(T)
-            ω_hat = atan(dot(e, ŷ), dot(e, x̂))
-            eperp = cross(H, e) / (norm(H) * norm(e))
-
-            f = atan(dot(r, eperp), dot(r, e / norm(e)))
-
-            L = ω_hat + f
-        else
-            L = atan(dot(r, ŷ), dot(r, x̂))
-        end
-    end
+    _, _, _, Ω, ω, f = cart2koe(
+        u, μ; equatorial_tol=equatorial_tol, circular_tol=circular_tol
+    )
+    L = Ω + ω + f
 
     return SVector{7,RT}(H[1], H[2], H[3], e[1], e[2], e[3], L)
 end
@@ -450,63 +430,60 @@ Converts Milankovich state vector into the Cartesian state vector.
 # Returns
 -`u_cart::SVector{6, <:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
 """
-function Mil2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
+function Mil2cart(
+    u::AbstractVector{T}, μ::V; equatorial_tol::Float64=1E-15, circular_tol::Float64=1E-15
+) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     H = SVector{3}(u[1], u[2], u[3])
     e = SVector{3}(u[4], u[5], u[6])
     L = u[7]
 
-    x̂ = SVector{3}(1.0, 0.0, 0.0)
-    ŷ = SVector{3}(0.0, 1.0, 0.0)
     ẑ = SVector{3}(0.0, 0.0, 1.0)
 
-    if abs(H[1]) > eps(T) || abs(H[2]) > eps(T)
-        nΩ = cross(ẑ, H) / norm(cross(ẑ, H))
-        Ω = atan(dot(ŷ, nΩ), dot(x̂, nΩ))
-        nΩperp = cross(H, nΩ / norm(H))
+    i = angle_between_vectors(H, ẑ)
 
-        if norm(e) > eps(T)
-            ω = atan(dot(e, nΩperp), dot(e, nΩ))
+    hmag = √(sum(abs2.(H)))
+    emag = √(sum(abs2.(e)))
 
-            f = L - (Ω + ω)
+    if abs(i) < equatorial_tol
+        if abs(emag) < circular_tol
+            Ω = 0.0
+            ω = 0.0
         else
-            f = L - Ω
+            Ω = 0
+            ω = rem2pi(atan(e[2], e[1]), RoundDown)
         end
+    elseif abs(emag) < circular_tol
+        n = cross(ẑ, H ./ hmag)
+        Ω = rem2pi(atan(n[2], n[1]), RoundDown)
+        ω = 0.0
     else
-        if norm(e) > eps(T)
-            ω_hat = atan(dot(e, ŷ), dot(e, x̂))
-
-            f = L - ω_hat
-        else
-            f = L
-        end
+        n = cross(ẑ, H ./ hmag)
+        Ω = rem2pi(atan(n[2], n[1]), RoundDown)
+        ω = angle_between_vectors(n, e)
     end
 
-    p = norm(H)^2 / μ
-    rmag = p / (1.0 + norm(e) * cos(f))
+    f = L - Ω - ω
 
-    if abs(H[1]) > eps(T) || abs(H[2]) > eps(T)
-        if norm(e) > eps(T)
-            ê = e / norm(e)
-            eperp = cross(H, e) / (norm(H) * norm(e))
-        else
-            ê = nΩ
-            eperp = nΩperp
-        end
-    else
-        if norm(e) > eps(T)
-            ê = e / norm(e)
-            eperp = cross(H, e) / (norm(H) * norm(e))
-        else
-            ê = x̂
-            eperp = ŷ
-        end
-    end
+    a = (hmag^2) / (μ * (1 - emag^2))
+    rmag = (a * (1.0 - emag^2) / (1.0 + emag * cos(f)))
 
-    r = rmag * (cos(f) * ê + sin(f) * eperp)
-    v = √(μ / p) * (-sin(f) * ê + (norm(e) + cos(f)) * eperp)
+    θ = ω + f
 
-    return SVector{6,RT}(r[1], r[2], r[3], v[1], v[2], v[3])
+    sΩ, cΩ = sincos(Ω)
+    sθ, cθ = sincos(θ)
+    sω, cω = sincos(ω)
+    si, ci = sincos(i)
+
+    x = rmag * (cΩ * cθ - sΩ * sθ * ci)
+    y = rmag * (sΩ * cθ + cΩ * sθ * ci)
+    z = rmag * (sθ * si)
+
+    ẋ = -μ / hmag * (cΩ * (sθ + emag * sω) + sΩ * (cθ + emag * cω) * ci)
+    ẏ = -μ / hmag * (sΩ * (sθ + emag * sω) - cΩ * (cθ + emag * cω) * ci)
+    ż = μ / hmag * (cθ + emag * cω) * si
+
+    return SVector{6,RT}(x, y, z, ẋ, ẏ, ż)
 end
 
 """
