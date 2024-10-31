@@ -392,6 +392,11 @@ Converts Cartesian state vector into the Milankovich state vector.
 -`u::AbstractVector{<:Number}`: The Cartesian state vector [x; y; z; ẋ; ẏ; ż].
 -`μ::Number`: Standard graviational parameter of central body.
 
+# Keyword Arguments
+-`equatorial_tol::Float64`: The tolerance on what is considered an equatorial orbit (no inclination). [Default=1e-15]
+-`circular_tol::Float64`: The tolerance on what is considered a circular orbit (no eccentricity). [Default=1e-15]
+
+
 # Returns
 -`u_Mil::SVector{7, <:Number}`: The Milankovich state vector [H; e; L]. 
 """
