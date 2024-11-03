@@ -33,7 +33,6 @@ Cartesian(X::AbstractVector{T}) where {T} = Cartesian{T}(X[1], X[2], X[3], X[4],
 function Cartesian(x::X, y::Y, z::Z, ẋ::XV, ẏ::YV, ż::ZV) where {X,Y,Z,XV,YV,ZV}
     return Cartesian{promote_type(X, Y, Z, XV, YV, ZV)}(x, y, z, ẋ, ẏ, ż)
 end
-(::Type{C})(g::StaticVector) where {C<:Cartesian} = C(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
 params(g::Cartesian{T}) where {T<:Number} = SVector{6,T}(g.x, g.y, g.z, g.ẋ, g.ẏ, g.ż)

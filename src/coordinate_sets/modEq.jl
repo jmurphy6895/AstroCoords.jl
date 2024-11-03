@@ -32,7 +32,6 @@ ModEq(X::AbstractVector{T}) where {T} = ModEq{T}(X[1], X[2], X[3], X[4], X[5], X
 function ModEq(p::P, f::F, g::G, h::H, k::K, L::LT) where {P,F,G,H,K,LT}
     return ModEq{promote_type(P, F, G, H, K, LT)}(p, f, g, h, k, L)
 end
-(::Type{M})(g::StaticVector) where {M<:ModEq} = M(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
 params(g::ModEq{T}) where {T<:Number} = SVector{6,T}(g.p, g.f, g.g, g.h, g.k, g.L)

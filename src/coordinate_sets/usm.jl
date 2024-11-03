@@ -170,7 +170,6 @@ USMEM(X::AbstractVector{T}) where {T} = USMEM{T}(X[1], X[2], X[3], X[4], X[5], X
 function USMEM(C::CT, Rf1::R1, Rf2::R2, a1::A1, a2::A2, a3::A3) where {CT,R1,R2,A1,A2,A3}
     return USMEM{promote_type(CT, R1, R2, A1, A2, A3)}(C, Rf1, Rf2, a1, a2, a3)
 end
-(::Type{UET})(g::StaticVector) where {UET<:USMEM} = UET(g[1], g[2], g[3], g[4], g[5], g[6])
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
 params(g::USMEM{T}) where {T<:Number} = SVector{6,T}(g.C, g.Rf1, g.Rf2, g.a1, g.a2, g.a3)

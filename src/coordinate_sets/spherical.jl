@@ -105,9 +105,6 @@ end
 function Cylindrical(ρ::R, θ::T, z::Z, ρdot::RD, θdot::TD, ż::ZD) where {R,T,Z,RD,TD,ZD}
     return Cylindrical{promote_type(R, T, Z, RD, TD, ZD)}(ρ, θ, z, ρdot, θdot, ż)
 end
-function (::Type{C})(g::StaticVector) where {C<:Cylindrical}
-    return C(g[1], g[2], g[3], g[4], g[5], g[6])
-end
 
 # ~~~~~~~~~~~~~~~ Conversions ~~~~~~~~~~~~~~~ #
 function params(g::Cylindrical{T}) where {T<:Number}
