@@ -1,5 +1,4 @@
 @testset "Test Constructor" begin
-    
     u0 = SVector{6}(randn(6)...)
 
     for set in _COORDINATE_SETS
