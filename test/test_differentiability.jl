@@ -11,7 +11,7 @@ const _BACKENDS = (
     ("ForwardDiff", AutoForwardDiff()),
     ("Diffractor", AutoDiffractor()),
     ("Enzyme", AutoEnzyme()),
-    ("Mooncake", AutoMooncake(;config=nothing)),
+    ("Mooncake", AutoMooncake(; config=nothing)),
     ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
 )
 
