@@ -10,11 +10,11 @@ using AstroCoords
 using DifferentiationInterface, Diffractor
 using Test
 _BACKENDS = (
-    #("ForwardDiff", AutoForwardDiff()),
-    ("Diffractor", AutoDiffractor()),
-    #("Enzyme", AutoEnzyme()),
-    #("Mooncake", AutoMooncake(;config=nothing)),
-    #("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
+#("ForwardDiff", AutoForwardDiff()),
+("Diffractor", AutoDiffractor()),
+#("Enzyme", AutoEnzyme()),
+#("Mooncake", AutoMooncake(;config=nothing)),
+#("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
 )
 
 @testset "Coordinate Transformation Differentiation" begin
@@ -82,7 +82,10 @@ _BACKENDS = (
                 @test df_fd ≈ df_ad atol = 1e-2
             catch err
                 @test err isa MethodError
-                @test startswith(sprint(showerror, err), "MethodError: no method matching iterate(::Nothing)")
+                @test startswith(
+                    sprint(showerror, err),
+                    "MethodError: no method matching iterate(::Nothing)",
+                )
             end
 
             try
@@ -91,9 +94,12 @@ _BACKENDS = (
                 )
                 @test f_fd2 == f_ad2
                 @test df_fd2 ≈ something.(df_ad2, 0.0) atol = 1e-4
-            catch err 
+            catch err
                 @test err isa MethodError
-                @test startswith(sprint(showerror, err), "MethodError: no method matching iterate(::Nothing)")
+                @test startswith(
+                    sprint(showerror, err),
+                    "MethodError: no method matching iterate(::Nothing)",
+                )
             end
         end
     end

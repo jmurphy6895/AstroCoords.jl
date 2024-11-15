@@ -26,8 +26,11 @@ Computes the angle between two vectors in a more numerically stable way than dot
 
     a = 2.0 * atan(norm(y), norm(x))
 
-    angle::T =
-        !(sign(a) == -1.0 || sign(T(π) - a) == -1.0) ? a : (sign(a) == -1.0 ? zero(T) : T(π))
+    angle::T = if !(sign(a) == -1.0 || sign(T(π) - a) == -1.0)
+        a
+    else
+        (sign(a) == -1.0 ? zero(T) : T(π))
+    end
 
     return angle
 end
