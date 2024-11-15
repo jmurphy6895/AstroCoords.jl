@@ -6,15 +6,13 @@
 # Currently Supported & Tested
 # Diffractor, Enzyme, ForwardDiff, FiniteDiff, Mooncake, PolyesterForwardDiff, Zygote
 ########################################################################################
-using AstroCoords
-using DifferentiationInterface, Diffractor
-using Test
-_BACKENDS = (
-#("ForwardDiff", AutoForwardDiff()),
-("Diffractor", AutoDiffractor()),
-#("Enzyme", AutoEnzyme()),
-#("Mooncake", AutoMooncake(;config=nothing)),
-#("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
+
+const _BACKENDS = (
+    ("ForwardDiff", AutoForwardDiff()),
+    ("Diffractor", AutoDiffractor()),
+    ("Enzyme", AutoEnzyme()),
+    ("Mooncake", AutoMooncake(;config=nothing)),
+    ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
 )
 
 @testset "Coordinate Transformation Differentiation" begin
