@@ -3,14 +3,13 @@ using Aqua
 using Test
 
 using DifferentiationInterface
+using Diffractor
 using Enzyme
 using FiniteDiff
-using FiniteDifferences
 using ForwardDiff
+using Mooncake
 using PolyesterForwardDiff
 using Zygote
-#TODO: GET THESE WORKING
-#import FastDifferentiation, Mooncake, ReverseDiff, Symbolics, Tracker
 
 using AllocCheck
 

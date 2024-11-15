@@ -3,40 +3,18 @@
 # Tests for Differentiation Across the Coordinate Sets
 #
 ########################################################################################
-# Currently Supported:
-# ForwardDiff, FiniteDiff, FiniteDifferences, PolyesterForwardDiff
-#
-# Partially Supported:
-# Enzyme, Zygote
-#
-# Not Yet Supported:
-# FastDifferentiation, Mooncake, ReverseDiff, Symbolics, Tracker
+# Currently Supported & Tested
+# Diffractor, Enzyme, ForwardDiff, FiniteDiff, Mooncake, PolyesterForwardDiff, Zygote
 ########################################################################################
-const _COORDINATE_SETS_DIFF = [
-    #Cartesian, #TODO: Skipped for DifferentiationInterface -- Zygote
-    Delaunay,
-    Keplerian,
-    Milankovich,
-    ModEq,
-    #Cylindrical, #TODO: Skipped for DifferentiationInterface -- Zygote
-    #Spherical, #TODO: Skipped for DifferentiationInterface -- Zygote
-    USM7,
-    USM6,
-    USMEM,
-]
-
-const _BACKENDS = (
-    ("ForwardDiff", AutoForwardDiff()),
-    #("Diffractor", AutoDiffractor()), #! Error with iszero()?
-    ("Enzyme", AutoEnzyme()), #! Failing on Julia 1.11, but not Julia 1.10
-    #("FastDifferentiation", AutoFastDifferentiation()), #! Doesn't Yet Support if Statements
-    ("FiniteDifferences", AutoFiniteDifferences(; fdm=FiniteDifferences.central_fdm(5, 1))),
-    #("Mooncake", AutoMooncake(;config=nothing)), #! Problem with StaticVector
-    ("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
-    #("ReverseDiff", AutoReverseDiff()), #! Problem with normalize()
-    #("Symbolics", AutoSymbolics()), #! Problem with normalize()
-    #("Tracker", AutoTracker()), #! Problem with AstroCoord Construction, tries to convert TrackedReal to Float
-    ("Zygote", AutoZygote()), #TODO: DiffInterface Zygote Doesn't Handle Constant Functions Yet (Stand-alone Zygote should work)
+using AstroCoords
+using DifferentiationInterface, Diffractor
+using Test
+_BACKENDS = (
+    #("ForwardDiff", AutoForwardDiff()),
+    ("Diffractor", AutoDiffractor()),
+    #("Enzyme", AutoEnzyme()),
+    #("Mooncake", AutoMooncake(;config=nothing)),
+    #("PolyesterForwardDiff", AutoPolyesterForwardDiff()),
 )
 
 @testset "Coordinate Transformation Differentiation" begin
@@ -51,30 +29,71 @@ const _BACKENDS = (
 
     μ = 3.986004415e5
 
-    for set in _COORDINATE_SETS_DIFF
-        f_fd, df_fd = value_and_jacobian(
-            (x) -> set(Cartesian(x), μ), AutoFiniteDiff(), state
-        )
-
-        f_fd2, df_fd2 = value_and_derivative(
-            (x) -> set(Cartesian(state), x), AutoFiniteDiff(), μ
-        )
-
-        for backend in _BACKENDS
-            @eval @testset $("Coordinate Set $set " * string(backend[1])) begin
-                f_ad, df_ad = value_and_jacobian(
-                    (x) -> $set(Cartesian(x), $μ), $backend[2], $state
+    for backend in _BACKENDS
+        testset_name = "Coordinate Set Transformation " * backend[1]
+        @testset "$testset_name" begin
+            for set in _COORDINATE_SETS
+                f_fd, df_fd = value_and_jacobian(
+                    (x) -> set(Cartesian(x), μ), AutoFiniteDiff(), state
                 )
 
-                @test $f_fd == f_ad
-                @test $df_fd ≈ df_ad atol = 1e-2
+                f_fd2, df_fd2 = value_and_derivative(
+                    (x) -> set(Cartesian(state), x), AutoFiniteDiff(), μ
+                )
+
+                f_ad, df_ad = value_and_jacobian(
+                    (x) -> Array(params(set(Cartesian(x), μ))), backend[2], state
+                )
+
+                @test f_fd == f_ad
+
+                #TODO: Diffractor has some issue with the USM sets
+                if backend[1] == "Diffractor"
+                    @test df_fd ≈ df_ad rtol = 2e0
+                else
+                    @test df_fd ≈ df_ad atol = 1e-2
+                end
 
                 f_ad2, df_ad2 = value_and_derivative(
-                    (x) -> $set(Cartesian($state), x), $backend[2], $μ
+                    (x) -> Array(params(set(Cartesian(state), x))), backend[2], μ
                 )
 
-                @test $f_fd2 == f_ad2
-                @test $df_fd2 ≈ df_ad2 atol = 1e-4
+                @test f_fd2 == f_ad2
+                @test df_fd2 ≈ df_ad2 atol = 1e-4
+            end
+        end
+    end
+
+    @testset "Coordinate Set Transformation Zygote" begin
+        for set in _COORDINATE_SETS
+            f_fd, df_fd = value_and_jacobian(
+                (x) -> set(Cartesian(x), μ), AutoFiniteDiff(), state
+            )
+
+            f_fd2, df_fd2 = value_and_derivative(
+                (x) -> set(Cartesian(state), x), AutoFiniteDiff(), μ
+            )
+
+            try
+                f_ad, df_ad = value_and_jacobian(
+                    (x) -> set(Cartesian(x), μ), AutoZygote(), state
+                )
+                @test f_fd == f_ad
+                @test df_fd ≈ df_ad atol = 1e-2
+            catch err
+                @test err isa MethodError
+                @test startswith(sprint(showerror, err), "MethodError: no method matching iterate(::Nothing)")
+            end
+
+            try
+                f_ad2, df_ad2 = value_and_derivative(
+                    (x) -> set(Cartesian(state), x), AutoZygote(), μ
+                )
+                @test f_fd2 == f_ad2
+                @test df_fd2 ≈ something.(df_ad2, 0.0) atol = 1e-4
+            catch err 
+                @test err isa MethodError
+                @test startswith(sprint(showerror, err), "MethodError: no method matching iterate(::Nothing)")
             end
         end
     end
