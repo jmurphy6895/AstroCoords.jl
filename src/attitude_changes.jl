@@ -20,7 +20,7 @@ function EP2MRP(β::AbstractVector{<:Number})
 
     σ = SVector{3}(σ1, σ2, σ3)
 
-    σ_sq = sum(abs2.(σ))
+    σ_sq = norm(σ)^2.0
 
     if √(σ_sq) > 1.0
         σ = -σ / (σ_sq)
