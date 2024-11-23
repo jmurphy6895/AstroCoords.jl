@@ -354,11 +354,13 @@ function IOE2J2IOE(
     best_residual = error
     best_guess = zeros(6)
 
+    u_IOE_guess = MVector{6,RT}(u[1], u[2], u[3], u[4], u[5], u[6])
+
     while error > tol && iter < max_iter
         iter += 1
 
         #* Step 2a
-        u_IOE_guess = J2IOE2IOE(u_J2IOE_guess, μ) ./ scale
+        u_IOE_guess .= J2IOE2IOE(u_J2IOE_guess, μ) ./ scale
 
         #* Step 2b
         b_cut = u_J2IOE_guess[6] - π
