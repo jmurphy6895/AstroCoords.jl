@@ -451,7 +451,7 @@ const DelaunayToJ2EqOE = CartesianToJ2EqOE ∘ DelaunayToCartesian
 const J2EqOEToDelaunay = CartesianToDelaunay ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-# ~~~~~~~~~~~~~~~ Additional ConstrucTors ~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~ Additional Constructors ~~~~~~~~~~~~~~~ #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 #TODO: NOT MAINTAINABLE
 #TODO: CAN I DO THIS WITH METAPROGRAMMING?
