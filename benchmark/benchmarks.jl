@@ -18,7 +18,7 @@ const _COORDINATE_SETS = [
     USM7,
     USM6,
     USMEM,
-    J2EqOE
+    J2EqOE,
 ]
 
 const _state = [
@@ -35,9 +35,7 @@ const _μ = 3.986004415e5
 const _cart_state = Cartesian(_state)
 
 for set in _COORDINATE_SETS
-    SUITE["transformation"][string(set)] = @benchmarkable $(set)(
-        $_cart_state, $_μ
-    )
+    SUITE["transformation"][string(set)] = @benchmarkable $(set)($_cart_state, $_μ)
     new_coord = set(_cart_state, _μ)
     SUITE["transformation"][string(set) * "reverse"] = @benchmarkable Cartesian(
         $new_coord, $_μ
