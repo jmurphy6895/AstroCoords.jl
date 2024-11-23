@@ -630,7 +630,6 @@ function cart2delaunay(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     return SVector{6,RT}(L, G, H, M, ω, Ω)
 end
 
-export delaunay2cart
 """
     delaunay2cart(u::AbstractVector{T}, μ::V) where {T<:Number,V<:Number}
     

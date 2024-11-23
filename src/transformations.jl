@@ -388,6 +388,69 @@ const DelaunaytoCylindrical = CartesiantoCylindrical ∘ DelaunaytoCartesian
 const SphericaltoDelaunay = CartesiantoDelaunay ∘ SphericaltoCartesian
 const DelaunaytoSpherical = CartesiantoSpherical ∘ DelaunaytoCartesian
 
+
+# ~~~~~~~~~~~~~~~ Cartesian to J2 Modified Equinoctial ~~~~~~~~~~~~~~~ #
+struct CartesiantoJ2EqOETransform <: AstroCoordTransformation end
+
+@inline function (::CartesiantoJ2EqOETransform)(
+    x::Cartesian{T}, μ::V
+) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+    return J2EqOE{RT}(cart2J2EqOE(params(x), μ))
+end
+
+const CartesiantoJ2EqOE = CartesiantoJ2EqOETransform()
+
+struct J2EqOEtoCartesianTransform <: AstroCoordTransformation end
+
+@inline function (::J2EqOEtoCartesianTransform)(
+    x::J2EqOE{T}, μ::V
+) where {T<:Number,V<:Number}
+    RT = promote_type(T, V)
+    return Cartesian{RT}(J2EqOE2cart(params(x), μ))
+end
+
+const J2EqOEtoCartesian = J2EqOEtoCartesianTransform()
+
+Base.inv(::J2EqOEtoCartesianTransform) = Cartesianto2EqOETransform()
+Base.inv(::CartesiantoJ2EqOETransform) = J2EqOEtoCartesianTransform()
+
+# ~~~~~~~~~~~~~~~ Keplerian <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const KepleriantoJ2EqOE = CartesiantoJ2EqOE ∘ KepleriantoCartesian
+const J2EqOEtoKeplerian = CartesiantoKeplerian ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ USM7 <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const USM7toJ2EqOE = CartesiantoJ2EqOE ∘ USM7toCartesian
+const J2EqOEtoUSM7 = CartesiantoUSM7 ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ USM6 <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const USM6toJ2EqOE = CartesiantoJ2EqOE ∘ USM6toCartesian
+const J2EqOEtoUSM6 = CartesiantoUSM6 ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ USMEM <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const USMEMtoJ2EqOE = CartesiantoJ2EqOE ∘ USMEMtoCartesian
+const J2EqOEtoUSMEM = CartesiantoUSMEM ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ Milankovich <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const MilankovichtoJ2EqOE = CartesiantoJ2EqOE ∘ MilankovichtoCartesian
+const J2EqOEtoMilankovich = CartesiantoMilankovich ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ Modified Equinoctial <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const ModifiedEquinoctialtoJ2EqOE = CartesiantoJ2EqOE ∘ ModifiedEquinoctialtoCartesian
+const J2EqOEtoModifiedEquinoctial = CartesiantoModifiedEquinoctial ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ Cylindrical <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const CylindricaltoJ2EqOE = CartesiantoJ2EqOE ∘ CylindricaltoCartesian
+const J2EqOEtoCylindrical = CartesiantoCylindrical ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ Spherical <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const SphericaltoJ2EqOE = CartesiantoJ2EqOE ∘ SphericaltoCartesian
+const J2EqOEtoSpherical = CartesiantoSpherical ∘ J2EqOEtoCartesian
+
+# ~~~~~~~~~~~~~~~ Delaunay <=> J2EqOE ~~~~~~~~~~~~~~~ #
+const DelaunaytoJ2EqOE = CartesiantoJ2EqOE ∘ DelaunaytoCartesian
+const J2EqOEtoDelaunay = CartesiantoDelaunay ∘ J2EqOEtoCartesian
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # ~~~~~~~~~~~~~~~ Additional Constructors ~~~~~~~~~~~~~~~ #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -404,6 +467,7 @@ Cartesian(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoCart
 Cartesian(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoCartesian(X, μ)
 Cartesian(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoCartesian(X, μ)
 Cartesian(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoCartesian(X, μ)
+Cartesian(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoCartesian(X, μ)
 
 # ~~~~~~~~~~~~~~~ Keplerian ~~~~~~~~~~~~~~~ #
 Keplerian(X::Keplerian{T}, μ::Number) where {T<:Number} = X
@@ -416,6 +480,7 @@ Keplerian(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoKepl
 Keplerian(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoKeplerian(X, μ)
 Keplerian(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoKeplerian(X, μ)
 Keplerian(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoKeplerian(X, μ)
+Keplerian(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoKeplerian(X, μ)
 
 # ~~~~~~~~~~~~~~~ USM7 ~~~~~~~~~~~~~~~ #
 USM7(X::USM7{T}, μ::Number) where {T<:Number} = X
@@ -428,6 +493,7 @@ USM7(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoUSM7(X, �
 USM7(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoUSM7(X, μ)
 USM7(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoUSM7(X, μ)
 USM7(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoUSM7(X, μ)
+USM7(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoUSM7(X, μ)
 
 # ~~~~~~~~~~~~~~~ USM6 ~~~~~~~~~~~~~~~ #
 USM6(X::USM6{T}, μ::Number) where {T<:Number} = X
@@ -440,6 +506,7 @@ USM6(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoUSM6(X, �
 USM6(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoUSM6(X, μ)
 USM6(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoUSM6(X, μ)
 USM6(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoUSM6(X, μ)
+USM6(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoUSM6(X, μ)
 
 # ~~~~~~~~~~~~~~~ USMEM ~~~~~~~~~~~~~~~ #
 USMEM(X::USMEM{T}, μ::Number) where {T<:Number} = X
@@ -452,6 +519,7 @@ USMEM(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoUSMEM(X,
 USMEM(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoUSMEM(X, μ)
 USMEM(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoUSMEM(X, μ)
 USMEM(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoUSMEM(X, μ)
+USMEM(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoUSMEM(X, μ)
 
 # ~~~~~~~~~~~~~~~ Milankovich ~~~~~~~~~~~~~~~ #
 Milankovich(X::Milankovich{T}, μ::Number) where {T<:Number} = X
@@ -466,6 +534,7 @@ end
 Milankovich(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoMilankovich(X, μ)
 Milankovich(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoMilankovich(X, μ)
 Milankovich(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoMilankovich(X, μ)
+Milankovich(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoMilankovich(X, μ)
 
 # ~~~~~~~~~~~~~~~ ModEq ~~~~~~~~~~~~~~~ #
 ModEq(X::ModEq{T}, μ::Number) where {T<:Number} = X
@@ -482,6 +551,7 @@ function ModEq(X::Cylindrical{T}, μ::Number) where {T<:Number}
 end
 ModEq(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoModifiedEquinoctial(X, μ)
 ModEq(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoModifiedEquinoctial(X, μ)
+ModEq(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoModEq(X, μ)
 
 # ~~~~~~~~~~~~~~~ Cylindrical ~~~~~~~~~~~~~~~ #
 Cylindrical(X::Cylindrical{T}, μ::Number) where {T<:Number} = X
@@ -496,6 +566,7 @@ function Cylindrical(X::ModEq{T}, μ::Number) where {T<:Number}
 end
 Cylindrical(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoCylindrical(X, μ)
 Cylindrical(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoCylindrical(X, μ)
+Cylindrical(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoCylindrical(X, μ)
 
 # ~~~~~~~~~~~~~~~ Spherical ~~~~~~~~~~~~~~~ #
 Spherical(X::Spherical{T}, μ::Number) where {T<:Number} = X
@@ -508,6 +579,7 @@ Spherical(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoSpheri
 Spherical(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoSpherical(X, μ)
 Spherical(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoSpherical(X, μ)
 Spherical(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoSpherical(X, μ)
+Spherical(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoSpherical(X, μ)
 
 # ~~~~~~~~~~~~~~~ Delaunay ~~~~~~~~~~~~~~~ #
 Delaunay(X::Delaunay{T}, μ::Number) where {T<:Number} = X
@@ -520,3 +592,17 @@ Delaunay(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoDelauna
 Delaunay(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoDelaunay(X, μ)
 Delaunay(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoDelaunay(X, μ)
 Delaunay(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoDelaunay(X, μ)
+Delaunay(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoDelaunay(X, μ)
+
+# ~~~~~~~~~~~~~~~ J2EqOE ~~~~~~~~~~~~~~~ #
+J2EqOE(X::J2EqOE{T}, μ::Number) where {T<:Number} = X
+J2EqOE(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoJ2EqOE(X, μ)
+J2EqOE(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoJ2EqOE(X, μ)
+J2EqOE(X::USM7{T}, μ::Number) where {T<:Number} = USM7toJ2EqOE(X, μ)
+J2EqOE(X::USM6{T}, μ::Number) where {T<:Number} = USM6toJ2EqOE(X, μ)
+J2EqOE(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoJ2EqOE(X, μ)
+J2EqOE(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoJ2EqOE(X, μ)
+J2EqOE(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoJ2EqOE(X, μ)
+J2EqOE(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoJ2EqOE(X, μ)
+J2EqOE(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoJ2EqOE(X, μ)
+J2EqOE(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoJ2EqOE(X, μ)

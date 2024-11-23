@@ -6,7 +6,8 @@ using StaticArrays
 include("utils.jl")
 include("./anomalies.jl")
 include("./attitude_changes.jl")
-include("./coordinate_changes.jl")
+include("./coordinate_changes/coordinate_changes.jl")
+include("./coordinate_changes/J2EqOE.jl")
 include("./core_types.jl")
 
 include("./coordinate_sets/cartesian.jl")
