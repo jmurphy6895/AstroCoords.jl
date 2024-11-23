@@ -31,6 +31,9 @@ const _BACKENDS = (
         testset_name = "Coordinate Set Transformation " * backend[1]
         @testset "$testset_name" begin
             for set in _COORDINATE_SETS
+                if set == J2EqOE
+                    continue
+                end
                 f_fd, df_fd = value_and_jacobian(
                     (x) -> set(Cartesian(x), μ), AutoFiniteDiff(), state
                 )
@@ -64,6 +67,9 @@ const _BACKENDS = (
 
     @testset "Coordinate Set Transformation Zygote" begin
         for set in _COORDINATE_SETS
+            if set == J2EqOE
+                continue
+            end
             f_fd, df_fd = value_and_jacobian(
                 (x) -> set(Cartesian(x), μ), AutoFiniteDiff(), state
             )

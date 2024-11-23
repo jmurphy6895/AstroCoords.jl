@@ -11,6 +11,7 @@ using Mooncake
 using PolyesterForwardDiff
 using Zygote
 
+using JET
 using AllocCheck
 
 const _COORDINATE_SETS = [
@@ -24,9 +25,11 @@ const _COORDINATE_SETS = [
     USM7,
     USM6,
     USMEM,
+    J2EqOE,
 ]
 
 @testset "AstroCoords.jl" begin
+    include("test_J2EqOE.jl")
     include("test_coordinate_changes.jl")
     include("test_anomalies.jl")
     include("test_quantities.jl")
