@@ -71,7 +71,6 @@ Converts the true anomaly into the mean anomaly.
 -`M::Number`: Mean anomaly of the orbit [radians].
 """
 @inline function trueAnomaly2MeanAnomaly(f::Number, e::Number)
-
     E = trueAnomaly2EccentricAnomaly(f, e)
     M = eccentricAnomaly2MeanAnomaly(E, e)
 
@@ -93,12 +92,14 @@ Converts the true anomaly into the mean anomaly.
 """
 @inline function trueAnomaly2EccentricAnomaly(f::Number, e::Number)
     if e < 1.0
-        E = atan((sin(f) * √(1 - e^2)) / (1.0 + e * cos(f)), (e + cos(f)) / (1.0 + e * cos(f)))
+        E = atan(
+            (sin(f) * √(1 - e^2)) / (1.0 + e * cos(f)), (e + cos(f)) / (1.0 + e * cos(f))
+        )
 
         E = rem2pi(E, RoundDown)
     else
         E = 2.0 * atanh(√((e - 1.0) / (1.0 + e)) * tan(f / 2.0))
-        
+
         E = rem2pi(E, RoundDown)
     end
 
