@@ -342,7 +342,7 @@ function IOE2J2IOE(
 ) where {T<:Number,V<:Number,W<:Number}
     RT = promote_type(T, V, W)
 
-    scale = [Req, 1.0, 1.0, 1.0, 1.0, 1.0]
+    scale = SVector{6}(Req, 1.0, 1.0, 1.0, 1.0, 1.0)
 
     #* Step 1
     u_J2IOE_guess = MVector{6,RT}(u[1], u[2], u[3], u[4], u[5], u[6])

@@ -11,6 +11,7 @@ using Mooncake
 using PolyesterForwardDiff
 using Zygote
 
+using JET
 using AllocCheck
 
 const _COORDINATE_SETS = [

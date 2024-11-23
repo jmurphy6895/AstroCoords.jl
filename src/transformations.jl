@@ -411,7 +411,7 @@ end
 
 const J2EqOEToCartesian = J2EqOEToCartesianTransform()
 
-Base.inv(::J2EqOEToCartesianTransform) = CartesianTo2EqOETransform()
+Base.inv(::J2EqOEToCartesianTransform) = CartesianToJ2EqOETransform()
 Base.inv(::CartesianToJ2EqOETransform) = J2EqOEToCartesianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> J2EqOE ~~~~~~~~~~~~~~~ #
@@ -550,7 +550,7 @@ function ModEq(X::Cylindrical{T}, μ::Number) where {T<:Number}
 end
 ModEq(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToModifiedEquinoctial(X, μ)
 ModEq(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToModifiedEquinoctial(X, μ)
-ModEq(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToModEq(X, μ)
+ModEq(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToModifiedEquinoctial(X, μ)
 
 # ~~~~~~~~~~~~~~~ Cylindrical ~~~~~~~~~~~~~~~ #
 Cylindrical(X::Cylindrical{T}, μ::Number) where {T<:Number} = X
