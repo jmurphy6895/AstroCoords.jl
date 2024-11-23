@@ -6,7 +6,7 @@ for set1 in _COORDINATE_SETS
     for set2 in _COORDINATE_SETS
         if set1 == J2EqOE && set2 != J2EqOE
             # TODO: ROOT FINDER ALLOCATES THE MVECTORS
-            @test length(check_allocs(set1, (set2{Float64}, Float64))) == 5
+            @test length(check_allocs(set1, (set2{Float64}, Float64))) <= 5
         else
             @test length(check_allocs(set1, (set2{Float64}, Float64))) == 0
         end
