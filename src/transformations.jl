@@ -13,596 +13,595 @@ An abstract type representing a Transformation Between Astrodynamics Coordinates
 abstract type AstroCoordTransformation <: AstrodynamicsTransformation end
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> Keplerian ~~~~~~~~~~~~~~~ #
-struct CartesiantoKeplerianTransform <: AstroCoordTransformation end
+struct CartesianToKeplerianTransform <: AstroCoordTransformation end
 
-@inline function (::CartesiantoKeplerianTransform)(
+@inline function (::CartesianToKeplerianTransform)(
     x::Cartesian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Keplerian{RT}(cart2koe(params(x), μ))
 end
 
-const CartesiantoKeplerian = CartesiantoKeplerianTransform()
+const CartesianToKeplerian = CartesianToKeplerianTransform()
 
-struct KepleriantoCartesianTransform <: AstroCoordTransformation end
+struct KeplerianToCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::KepleriantoCartesianTransform)(
+@inline function (::KeplerianToCartesianTransform)(
     x::Keplerian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cartesian{RT}(koe2cart(params(x), μ))
 end
 
-const KepleriantoCartesian = KepleriantoCartesianTransform()
+const KeplerianToCartesian = KeplerianToCartesianTransform()
 
-Base.inv(::CartesiantoKeplerianTransform) = KepleriantoCartesianTransform()
-Base.inv(::KepleriantoCartesianTransform) = CartesiantoKeplerianTransform()
+Base.inv(::CartesianToKeplerianTransform) = KeplerianToCartesianTransform()
+Base.inv(::KeplerianToCartesianTransform) = CartesianToKeplerianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> USM7 ~~~~~~~~~~~~~~~ #
-struct KepleriantoUSM7Transform <: AstroCoordTransformation end
+struct KeplerianToUSM7Transform <: AstroCoordTransformation end
 
-@inline function (::KepleriantoUSM7Transform)(
+@inline function (::KeplerianToUSM7Transform)(
     x::Keplerian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return USM7{RT}(koe2USM7(params(x), μ))
 end
 
-const KepleriantoUSM7 = KepleriantoUSM7Transform()
+const KeplerianToUSM7 = KeplerianToUSM7Transform()
 
-struct USM7toKeplerianTransform <: AstroCoordTransformation end
+struct USM7ToKeplerianTransform <: AstroCoordTransformation end
 
-@inline function (::USM7toKeplerianTransform)(x::USM7{T}, μ::V) where {T<:Number,V<:Number}
+@inline function (::USM7ToKeplerianTransform)(x::USM7{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Keplerian{RT}(USM72koe(params(x), μ))
 end
 
-const USM7toKeplerian = USM7toKeplerianTransform()
+const USM7ToKeplerian = USM7ToKeplerianTransform()
 
-Base.inv(::KepleriantoUSM7Transform) = USM7toKeplerianTransform()
-Base.inv(::USM7toKeplerianTransform) = KepleriantoUSM7Transform()
+Base.inv(::KeplerianToUSM7Transform) = USM7ToKeplerianTransform()
+Base.inv(::USM7ToKeplerianTransform) = KeplerianToUSM7Transform()
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> USM7 ~~~~~~~~~~~~~~~ #
-const CartesiantoUSM7 = KepleriantoUSM7 ∘ CartesiantoKeplerian
-const USM7toCartesian = KepleriantoCartesian ∘ USM7toKeplerian
+const CartesianToUSM7 = KeplerianToUSM7 ∘ CartesianToKeplerian
+const USM7ToCartesian = KeplerianToCartesian ∘ USM7ToKeplerian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> USM7 ~~~~~~~~~~~~~~~ #
-struct USM6toUSM7Transform <: AstroCoordTransformation end
+struct USM6ToUSM7Transform <: AstroCoordTransformation end
 
-@inline function (::USM6toUSM7Transform)(x::USM6{T}, μ::V) where {T<:Number,V<:Number}
+@inline function (::USM6ToUSM7Transform)(x::USM6{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return USM7{RT}(USM62USM7(params(x), μ))
 end
 
-const USM6toUSM7 = USM6toUSM7Transform()
+const USM6ToUSM7 = USM6ToUSM7Transform()
 
-struct USM7toUSM6Transform <: AstroCoordTransformation end
+struct USM7ToUSM6Transform <: AstroCoordTransformation end
 
-@inline function (::USM7toUSM6Transform)(x::USM7{T}, μ::V) where {T<:Number,V<:Number}
+@inline function (::USM7ToUSM6Transform)(x::USM7{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return USM6{RT}(USM72USM6(params(x), μ))
 end
 
-const USM7toUSM6 = USM7toUSM6Transform()
+const USM7ToUSM6 = USM7ToUSM6Transform()
 
-Base.inv(::USM6toUSM7Transform) = USM7toUSM6Transform()
-Base.inv(::USM7toUSM6Transform) = USM6toUSM7Transform()
+Base.inv(::USM6ToUSM7Transform) = USM7ToUSM6Transform()
+Base.inv(::USM7ToUSM6Transform) = USM6ToUSM7Transform()
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> USM6 ~~~~~~~~~~~~~~~ #
-const CartesiantoUSM6 = USM7toUSM6 ∘ CartesiantoUSM7
-const USM6toCartesian = USM7toCartesian ∘ USM6toUSM7
+const CartesianToUSM6 = USM7ToUSM6 ∘ CartesianToUSM7
+const USM6ToCartesian = USM7ToCartesian ∘ USM6ToUSM7
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> USM6 ~~~~~~~~~~~~~~~ #
-const KepleriantoUSM6 = USM7toUSM6 ∘ KepleriantoUSM7
-const USM6toKeplerian = USM7toKeplerian ∘ USM6toUSM7
+const KeplerianToUSM6 = USM7ToUSM6 ∘ KeplerianToUSM7
+const USM6ToKeplerian = USM7ToKeplerian ∘ USM6ToUSM7
 
 # ~~~~~~~~~~~~~~~ USMEM <=> USM7 ~~~~~~~~~~~~~~~ #
-struct USMEMtoUSM7Transform <: AstroCoordTransformation end
+struct USMEMToUSM7Transform <: AstroCoordTransformation end
 
-@inline function (::USMEMtoUSM7Transform)(x::USMEM{T}, μ::V) where {T<:Number,V<:Number}
+@inline function (::USMEMToUSM7Transform)(x::USMEM{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return USM7{RT}(USMEM2USM7(params(x), μ))
 end
 
-const USMEMtoUSM7 = USMEMtoUSM7Transform()
+const USMEMToUSM7 = USMEMToUSM7Transform()
 
-struct USM7toUSMEMTransform <: AstroCoordTransformation end
+struct USM7ToUSMEMTransform <: AstroCoordTransformation end
 
-@inline function (::USM7toUSMEMTransform)(x::USM7{T}, μ::V) where {T<:Number,V<:Number}
+@inline function (::USM7ToUSMEMTransform)(x::USM7{T}, μ::V) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return USMEM{RT}(USM72USMEM(params(x), μ))
 end
 
-const USM7toUSMEM = USM7toUSMEMTransform()
+const USM7ToUSMEM = USM7ToUSMEMTransform()
 
-Base.inv(::USMEMtoUSM7Transform) = USM7toUSMEMTransform()
-Base.inv(::USM7toUSMEMTransform) = USMEMtoUSM7Transform()
+Base.inv(::USMEMToUSM7Transform) = USM7ToUSMEMTransform()
+Base.inv(::USM7ToUSMEMTransform) = USMEMToUSM7Transform()
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> USMEM ~~~~~~~~~~~~~~~ #
-const CartesiantoUSMEM = USM7toUSMEM ∘ CartesiantoUSM7
-const USMEMtoCartesian = USM7toCartesian ∘ USMEMtoUSM7
+const CartesianToUSMEM = USM7ToUSMEM ∘ CartesianToUSM7
+const USMEMToCartesian = USM7ToCartesian ∘ USMEMToUSM7
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> USMEM ~~~~~~~~~~~~~~~ #
-const KepleriantoUSMEM = USM7toUSMEM ∘ KepleriantoUSM7
-const USMEMtoKeplerian = USM7toKeplerian ∘ USMEMtoUSM7
+const KeplerianToUSMEM = USM7ToUSMEM ∘ KeplerianToUSM7
+const USMEMToKeplerian = USM7ToKeplerian ∘ USMEMToUSM7
 
 # ~~~~~~~~~~~~~~~ USM6 <=> USMEM ~~~~~~~~~~~~~~~ #
-const USM6toUSMEM = USM7toUSMEM ∘ USM6toUSM7
-const USMEMtoUSM6 = USM7toUSM6 ∘ USMEMtoUSM7
+const USM6ToUSMEM = USM7ToUSMEM ∘ USM6ToUSM7
+const USMEMToUSM6 = USM7ToUSM6 ∘ USMEMToUSM7
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> Milankovich ~~~~~~~~~~~~~~~ #
-struct CartesiantoMilankovichTransform <: AstroCoordTransformation end
+struct CartesianToMilankovichTransform <: AstroCoordTransformation end
 
-@inline function (::CartesiantoMilankovichTransform)(
+@inline function (::CartesianToMilankovichTransform)(
     x::Cartesian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Milankovich{RT}(cart2Mil(params(x), μ))
 end
 
-const CartesiantoMilankovich = CartesiantoMilankovichTransform()
+const CartesianToMilankovich = CartesianToMilankovichTransform()
 
-struct MilankovichtoCartesianTransform <: AstroCoordTransformation end
+struct MilankovichToCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::MilankovichtoCartesianTransform)(
+@inline function (::MilankovichToCartesianTransform)(
     x::Milankovich{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cartesian{RT}(Mil2cart(params(x), μ))
 end
 
-const MilankovichtoCartesian = MilankovichtoCartesianTransform()
+const MilankovichToCartesian = MilankovichToCartesianTransform()
 
-Base.inv(::MilankovichtoCartesianTransform) = CartesiantoMilankovichTransform()
-Base.inv(::CartesiantoMilankovichTransform) = MilankovichtoCartesianTransform()
+Base.inv(::MilankovichToCartesianTransform) = CartesianToMilankovichTransform()
+Base.inv(::CartesianToMilankovichTransform) = MilankovichToCartesianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> Milankovich ~~~~~~~~~~~~~~~ #
-const KepleriantoMilankovich = CartesiantoMilankovich ∘ KepleriantoCartesian
-const MilankovichtoKeplerian = CartesiantoKeplerian ∘ MilankovichtoCartesian
+const KeplerianToMilankovich = CartesianToMilankovich ∘ KeplerianToCartesian
+const MilankovichToKeplerian = CartesianToKeplerian ∘ MilankovichToCartesian
 
 # ~~~~~~~~~~~~~~~ USM7 <=> Milankovich ~~~~~~~~~~~~~~~ #
-const USM7toMilankovich = CartesiantoMilankovich ∘ USM7toCartesian
-const MilankovichtoUSM7 = CartesiantoUSM7 ∘ MilankovichtoCartesian
+const USM7ToMilankovich = CartesianToMilankovich ∘ USM7ToCartesian
+const MilankovichToUSM7 = CartesianToUSM7 ∘ MilankovichToCartesian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> Milankovich ~~~~~~~~~~~~~~~ #
-const USM6toMilankovich = CartesiantoMilankovich ∘ USM6toCartesian
-const MilankovichtoUSM6 = CartesiantoUSM6 ∘ MilankovichtoCartesian
+const USM6ToMilankovich = CartesianToMilankovich ∘ USM6ToCartesian
+const MilankovichToUSM6 = CartesianToUSM6 ∘ MilankovichToCartesian
 
 # ~~~~~~~~~~~~~~~ USMEM <=> Milankovich ~~~~~~~~~~~~~~~ #
-const USMEMtoMilankovich = CartesiantoMilankovich ∘ USMEMtoCartesian
-const MilankovichtoUSMEM = CartesiantoUSMEM ∘ MilankovichtoCartesian
+const USMEMToMilankovich = CartesianToMilankovich ∘ USMEMToCartesian
+const MilankovichToUSMEM = CartesianToUSMEM ∘ MilankovichToCartesian
 
-# ~~~~~~~~~~~~~~~ Keplerian to ModifiedEquinoctial ~~~~~~~~~~~~~~~ #
-struct KepleriantoModifiedEquinoctialTransform <: AstroCoordTransformation end
+# ~~~~~~~~~~~~~~~ Keplerian To ModifiedEquinoctial ~~~~~~~~~~~~~~~ #
+struct KeplerianToModifiedEquinoctialTransform <: AstroCoordTransformation end
 
-@inline function (::KepleriantoModifiedEquinoctialTransform)(
+@inline function (::KeplerianToModifiedEquinoctialTransform)(
     x::Keplerian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return ModEq{RT}(koe2ModEq(params(x), μ))
 end
 
-const KepleriantoModifiedEquinoctial = KepleriantoModifiedEquinoctialTransform()
+const KeplerianToModifiedEquinoctial = KeplerianToModifiedEquinoctialTransform()
 
-struct ModifiedEquinoctialtoKeplerianTransform <: AstroCoordTransformation end
+struct ModifiedEquinoctialToKeplerianTransform <: AstroCoordTransformation end
 
-@inline function (::ModifiedEquinoctialtoKeplerianTransform)(
+@inline function (::ModifiedEquinoctialToKeplerianTransform)(
     x::ModEq{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Keplerian{RT}(ModEq2koe(params(x), μ))
 end
 
-const ModifiedEquinoctialtoKeplerian = ModifiedEquinoctialtoKeplerianTransform()
+const ModifiedEquinoctialToKeplerian = ModifiedEquinoctialToKeplerianTransform()
 
-function Base.inv(::KepleriantoModifiedEquinoctialTransform)
-    return ModifiedEquinoctialtoKeplerianTransform()
+function Base.inv(::KeplerianToModifiedEquinoctialTransform)
+    return ModifiedEquinoctialToKeplerianTransform()
 end
-function Base.inv(::ModifiedEquinoctialtoKeplerianTransform)
-    return KepleriantoModifiedEquinoctialTransform()
+function Base.inv(::ModifiedEquinoctialToKeplerianTransform)
+    return KeplerianToModifiedEquinoctialTransform()
 end
 
 # ~~~~~~~~~~~~~~~ Cartesian <=> Modified Equinoctial ~~~~~~~~~~~~~~~ #
-const CartesiantoModifiedEquinoctial = KepleriantoModifiedEquinoctial ∘ CartesiantoKeplerian
-const ModifiedEquinoctialtoCartesian = KepleriantoCartesian ∘ ModifiedEquinoctialtoKeplerian
+const CartesianToModifiedEquinoctial = KeplerianToModifiedEquinoctial ∘ CartesianToKeplerian
+const ModifiedEquinoctialToCartesian = KeplerianToCartesian ∘ ModifiedEquinoctialToKeplerian
 
 # ~~~~~~~~~~~~~~~ USM7 <=> Modified Equinoctial ~~~~~~~~~~~~~~~ #
-const USM7toModifiedEquinoctial = KepleriantoModifiedEquinoctial ∘ USM7toKeplerian
-const ModifiedEquinoctialtoUSM7 = KepleriantoUSM7 ∘ ModifiedEquinoctialtoKeplerian
+const USM7ToModifiedEquinoctial = KeplerianToModifiedEquinoctial ∘ USM7ToKeplerian
+const ModifiedEquinoctialToUSM7 = KeplerianToUSM7 ∘ ModifiedEquinoctialToKeplerian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> Modified Equinoctial ~~~~~~~~~~~~~~~ #
-const USM6toModifiedEquinoctial = KepleriantoModifiedEquinoctial ∘ USM6toKeplerian
-const ModifiedEquinoctialtoUSM6 = KepleriantoUSM6 ∘ ModifiedEquinoctialtoKeplerian
+const USM6ToModifiedEquinoctial = KeplerianToModifiedEquinoctial ∘ USM6ToKeplerian
+const ModifiedEquinoctialToUSM6 = KeplerianToUSM6 ∘ ModifiedEquinoctialToKeplerian
 
 # ~~~~~~~~~~~~~~~ USMEM <=> Modified Equinoctial ~~~~~~~~~~~~~~~ #
-const USMEMtoModifiedEquinoctial = KepleriantoModifiedEquinoctial ∘ USMEMtoKeplerian
-const ModifiedEquinoctialtoUSMEM = KepleriantoUSMEM ∘ ModifiedEquinoctialtoKeplerian
+const USMEMToModifiedEquinoctial = KeplerianToModifiedEquinoctial ∘ USMEMToKeplerian
+const ModifiedEquinoctialToUSMEM = KeplerianToUSMEM ∘ ModifiedEquinoctialToKeplerian
 
 # ~~~~~~~~~~~~~~~ Milankovich <=> Modified Equinoctial ~~~~~~~~~~~~~~~ #
-const MilankovichtoModifiedEquinoctial =
-    KepleriantoModifiedEquinoctial ∘ MilankovichtoKeplerian
-const ModifiedEquinoctialtoMilankovich =
-    KepleriantoMilankovich ∘ ModifiedEquinoctialtoKeplerian
+const MilankovichToModifiedEquinoctial =
+    KeplerianToModifiedEquinoctial ∘ MilankovichToKeplerian
+const ModifiedEquinoctialToMilankovich =
+    KeplerianToMilankovich ∘ ModifiedEquinoctialToKeplerian
 
-# ~~~~~~~~~~~~~~~ Cartesian to Cylindrical ~~~~~~~~~~~~~~~ #
-struct CartesiantoCylindricalTransform <: AstroCoordTransformation end
+# ~~~~~~~~~~~~~~~ Cartesian To Cylindrical ~~~~~~~~~~~~~~~ #
+struct CartesianToCylindricalTransform <: AstroCoordTransformation end
 
-@inline function (::CartesiantoCylindricalTransform)(
+@inline function (::CartesianToCylindricalTransform)(
     x::Cartesian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cylindrical{RT}(cart2cylind(params(x), μ))
 end
 
-const CartesiantoCylindrical = CartesiantoCylindricalTransform()
+const CartesianToCylindrical = CartesianToCylindricalTransform()
 
-struct CylindricaltoCartesianTransform <: AstroCoordTransformation end
+struct CylindricalToCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::CylindricaltoCartesianTransform)(
+@inline function (::CylindricalToCartesianTransform)(
     x::Cylindrical{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cartesian{RT}(cylind2cart(params(x), μ))
 end
 
-const CylindricaltoCartesian = CylindricaltoCartesianTransform()
+const CylindricalToCartesian = CylindricalToCartesianTransform()
 
-Base.inv(::CylindricaltoCartesianTransform) = CartesiantoCylindricalTransform()
-Base.inv(::CartesiantoCylindricalTransform) = CylindricaltoCartesianTransform()
+Base.inv(::CylindricalToCartesianTransform) = CartesianToCylindricalTransform()
+Base.inv(::CartesianToCylindricalTransform) = CylindricalToCartesianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> Cylindrical ~~~~~~~~~~~~~~~ #
-const KepleriantoCylindrical = CartesiantoCylindrical ∘ KepleriantoCartesian
-const CylindricaltoKeplerian = CartesiantoKeplerian ∘ CylindricaltoCartesian
+const KeplerianToCylindrical = CartesianToCylindrical ∘ KeplerianToCartesian
+const CylindricalToKeplerian = CartesianToKeplerian ∘ CylindricalToCartesian
 
 # ~~~~~~~~~~~~~~~ USM7 <=> Cylindrical ~~~~~~~~~~~~~~~ #
-const USM7toCylindrical = CartesiantoCylindrical ∘ USM7toCartesian
-const CylindricaltoUSM7 = CartesiantoUSM7 ∘ CylindricaltoCartesian
+const USM7ToCylindrical = CartesianToCylindrical ∘ USM7ToCartesian
+const CylindricalToUSM7 = CartesianToUSM7 ∘ CylindricalToCartesian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> Cylindrical ~~~~~~~~~~~~~~~ #
-const USM6toCylindrical = CartesiantoCylindrical ∘ USM6toCartesian
-const CylindricaltoUSM6 = CartesiantoUSM6 ∘ CylindricaltoCartesian
+const USM6ToCylindrical = CartesianToCylindrical ∘ USM6ToCartesian
+const CylindricalToUSM6 = CartesianToUSM6 ∘ CylindricalToCartesian
 
 # ~~~~~~~~~~~~~~~ USMEM <=> Cylindrical ~~~~~~~~~~~~~~~ #
-const USMEMtoCylindrical = CartesiantoCylindrical ∘ USMEMtoCartesian
-const CylindricaltoUSMEM = CartesiantoUSMEM ∘ CylindricaltoCartesian
+const USMEMToCylindrical = CartesianToCylindrical ∘ USMEMToCartesian
+const CylindricalToUSMEM = CartesianToUSMEM ∘ CylindricalToCartesian
 
 # ~~~~~~~~~~~~~~~ Milankovich <=> Cylindrical ~~~~~~~~~~~~~~~ #
-const MilankovichtoCylindrical = CartesiantoCylindrical ∘ MilankovichtoCartesian
-const CylindricaltoMilankovich = CartesiantoMilankovich ∘ CylindricaltoCartesian
+const MilankovichToCylindrical = CartesianToCylindrical ∘ MilankovichToCartesian
+const CylindricalToMilankovich = CartesianToMilankovich ∘ CylindricalToCartesian
 
 # ~~~~~~~~~~~~~~~ Modified Equinoctial <=> Cylindrical ~~~~~~~~~~~~~~~ #
-const ModifiedEquinoctialtoCylindrical =
-    CartesiantoCylindrical ∘ ModifiedEquinoctialtoCartesian
-const CylindricaltoModifiedEquinoctial =
-    CartesiantoModifiedEquinoctial ∘ CylindricaltoCartesian
+const ModifiedEquinoctialToCylindrical =
+    CartesianToCylindrical ∘ ModifiedEquinoctialToCartesian
+const CylindricalToModifiedEquinoctial =
+    CartesianToModifiedEquinoctial ∘ CylindricalToCartesian
 
-# ~~~~~~~~~~~~~~~ Cartesian to Spherical ~~~~~~~~~~~~~~~ #
-struct CartesiantoSphericalTransform <: AstroCoordTransformation end
+# ~~~~~~~~~~~~~~~ Cartesian To Spherical ~~~~~~~~~~~~~~~ #
+struct CartesianToSphericalTransform <: AstroCoordTransformation end
 
-@inline function (::CartesiantoSphericalTransform)(
+@inline function (::CartesianToSphericalTransform)(
     x::Cartesian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Spherical{RT}(cart2sphere(params(x), μ))
 end
 
-const CartesiantoSpherical = CartesiantoSphericalTransform()
+const CartesianToSpherical = CartesianToSphericalTransform()
 
-struct SphericaltoCartesianTransform <: AstroCoordTransformation end
+struct SphericalToCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::SphericaltoCartesianTransform)(
+@inline function (::SphericalToCartesianTransform)(
     x::Spherical{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cartesian{RT}(sphere2cart(params(x), μ))
 end
 
-const SphericaltoCartesian = SphericaltoCartesianTransform()
+const SphericalToCartesian = SphericalToCartesianTransform()
 
-Base.inv(::SphericaltoCartesianTransform) = CartesiantoSphericalTransform()
-Base.inv(::CartesiantoSphericalTransform) = SphericaltoCartesianTransform()
+Base.inv(::SphericalToCartesianTransform) = CartesianToSphericalTransform()
+Base.inv(::CartesianToSphericalTransform) = SphericalToCartesianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> Spherical ~~~~~~~~~~~~~~~ #
-const KepleriantoSpherical = CartesiantoSpherical ∘ KepleriantoCartesian
-const SphericaltoKeplerian = CartesiantoKeplerian ∘ SphericaltoCartesian
+const KeplerianToSpherical = CartesianToSpherical ∘ KeplerianToCartesian
+const SphericalToKeplerian = CartesianToKeplerian ∘ SphericalToCartesian
 
 # ~~~~~~~~~~~~~~~ USM7 <=> Spherical ~~~~~~~~~~~~~~~ #
-const USM7toSpherical = CartesiantoSpherical ∘ USM7toCartesian
-const SphericaltoUSM7 = CartesiantoUSM7 ∘ SphericaltoCartesian
+const USM7ToSpherical = CartesianToSpherical ∘ USM7ToCartesian
+const SphericalToUSM7 = CartesianToUSM7 ∘ SphericalToCartesian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> Spherical ~~~~~~~~~~~~~~~ #
-const USM6toSpherical = CartesiantoSpherical ∘ USM6toCartesian
-const SphericaltoUSM6 = CartesiantoUSM6 ∘ SphericaltoCartesian
+const USM6ToSpherical = CartesianToSpherical ∘ USM6ToCartesian
+const SphericalToUSM6 = CartesianToUSM6 ∘ SphericalToCartesian
 
 # ~~~~~~~~~~~~~~~ USMEM <=> Spherical ~~~~~~~~~~~~~~~ #
-const USMEMtoSpherical = CartesiantoSpherical ∘ USMEMtoCartesian
-const SphericaltoUSMEM = CartesiantoUSMEM ∘ SphericaltoCartesian
+const USMEMToSpherical = CartesianToSpherical ∘ USMEMToCartesian
+const SphericalToUSMEM = CartesianToUSMEM ∘ SphericalToCartesian
 
 # ~~~~~~~~~~~~~~~ Milankovich <=> Spherical ~~~~~~~~~~~~~~~ #
-const MilankovichtoSpherical = CartesiantoSpherical ∘ MilankovichtoCartesian
-const SphericaltoMilankovich = CartesiantoMilankovich ∘ SphericaltoCartesian
+const MilankovichToSpherical = CartesianToSpherical ∘ MilankovichToCartesian
+const SphericalToMilankovich = CartesianToMilankovich ∘ SphericalToCartesian
 
 # ~~~~~~~~~~~~~~~ Modified Equinoctial <=> Spherical ~~~~~~~~~~~~~~~ #
-const ModifiedEquinoctialtoSpherical = CartesiantoSpherical ∘ ModifiedEquinoctialtoCartesian
-const SphericaltoModifiedEquinoctial = CartesiantoModifiedEquinoctial ∘ SphericaltoCartesian
+const ModifiedEquinoctialToSpherical = CartesianToSpherical ∘ ModifiedEquinoctialToCartesian
+const SphericalToModifiedEquinoctial = CartesianToModifiedEquinoctial ∘ SphericalToCartesian
 
 # ~~~~~~~~~~~~~~~ Cylindrical <=> Spherical ~~~~~~~~~~~~~~~ #
-const CylindricaltoSpherical = CartesiantoSpherical ∘ CylindricaltoCartesian
-const SphericaltoCylindrical = CartesiantoCylindrical ∘ SphericaltoCartesian
+const CylindricalToSpherical = CartesianToSpherical ∘ CylindricalToCartesian
+const SphericalToCylindrical = CartesianToCylindrical ∘ SphericalToCartesian
 
-# ~~~~~~~~~~~~~~~ Cartesian to Delaunay ~~~~~~~~~~~~~~~ #
-struct CartesiantoDelaunayTransform <: AstroCoordTransformation end
+# ~~~~~~~~~~~~~~~ Cartesian To Delaunay ~~~~~~~~~~~~~~~ #
+struct CartesianToDelaunayTransform <: AstroCoordTransformation end
 
-@inline function (::CartesiantoDelaunayTransform)(
+@inline function (::CartesianToDelaunayTransform)(
     x::Cartesian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Delaunay{RT}(cart2delaunay(params(x), μ))
 end
 
-const CartesiantoDelaunay = CartesiantoDelaunayTransform()
+const CartesianToDelaunay = CartesianToDelaunayTransform()
 
-struct DelaunaytoCartesianTransform <: AstroCoordTransformation end
+struct DelaunayToCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::DelaunaytoCartesianTransform)(
+@inline function (::DelaunayToCartesianTransform)(
     x::Delaunay{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cartesian{RT}(delaunay2cart(params(x), μ))
 end
 
-const DelaunaytoCartesian = DelaunaytoCartesianTransform()
+const DelaunayToCartesian = DelaunayToCartesianTransform()
 
-Base.inv(::DelaunaytoCartesianTransform) = CartesiantoDelaunayTransform()
-Base.inv(::CartesiantoDelaunayTransform) = DelaunaytoCartesianTransform()
+Base.inv(::DelaunayToCartesianTransform) = CartesianToDelaunayTransform()
+Base.inv(::CartesianToDelaunayTransform) = DelaunayToCartesianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> Delaunay ~~~~~~~~~~~~~~~ #
-const KepleriantoDelaunay = CartesiantoDelaunay ∘ KepleriantoCartesian
-const DelaunaytoKeplerian = CartesiantoKeplerian ∘ DelaunaytoCartesian
+const KeplerianToDelaunay = CartesianToDelaunay ∘ KeplerianToCartesian
+const DelaunayToKeplerian = CartesianToKeplerian ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ USM7 <=> Delaunay ~~~~~~~~~~~~~~~ #
-const USM7toDelaunay = CartesiantoDelaunay ∘ USM7toCartesian
-const DelaunaytoUSM7 = CartesiantoUSM7 ∘ DelaunaytoCartesian
+const USM7ToDelaunay = CartesianToDelaunay ∘ USM7ToCartesian
+const DelaunayToUSM7 = CartesianToUSM7 ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> Delaunay ~~~~~~~~~~~~~~~ #
-const USM6toDelaunay = CartesiantoDelaunay ∘ USM6toCartesian
-const DelaunaytoUSM6 = CartesiantoUSM6 ∘ DelaunaytoCartesian
+const USM6ToDelaunay = CartesianToDelaunay ∘ USM6ToCartesian
+const DelaunayToUSM6 = CartesianToUSM6 ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ USMEM <=> Delaunay ~~~~~~~~~~~~~~~ #
-const USMEMtoDelaunay = CartesiantoDelaunay ∘ USMEMtoCartesian
-const DelaunaytoUSMEM = CartesiantoUSMEM ∘ DelaunaytoCartesian
+const USMEMToDelaunay = CartesianToDelaunay ∘ USMEMToCartesian
+const DelaunayToUSMEM = CartesianToUSMEM ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ Milankovich <=> Delaunay ~~~~~~~~~~~~~~~ #
-const MilankovichtoDelaunay = CartesiantoDelaunay ∘ MilankovichtoCartesian
-const DelaunaytoMilankovich = CartesiantoMilankovich ∘ DelaunaytoCartesian
+const MilankovichToDelaunay = CartesianToDelaunay ∘ MilankovichToCartesian
+const DelaunayToMilankovich = CartesianToMilankovich ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ Modified Equinoctial <=> Delaunay ~~~~~~~~~~~~~~~ #
-const ModifiedEquinoctialtoDelaunay = CartesiantoDelaunay ∘ ModifiedEquinoctialtoCartesian
-const DelaunaytoModifiedEquinoctial = CartesiantoModifiedEquinoctial ∘ DelaunaytoCartesian
+const ModifiedEquinoctialToDelaunay = CartesianToDelaunay ∘ ModifiedEquinoctialToCartesian
+const DelaunayToModifiedEquinoctial = CartesianToModifiedEquinoctial ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ Cylindrical <=> Delaunay ~~~~~~~~~~~~~~~ #
-const CylindricaltoDelaunay = CartesiantoDelaunay ∘ CylindricaltoCartesian
-const DelaunaytoCylindrical = CartesiantoCylindrical ∘ DelaunaytoCartesian
+const CylindricalToDelaunay = CartesianToDelaunay ∘ CylindricalToCartesian
+const DelaunayToCylindrical = CartesianToCylindrical ∘ DelaunayToCartesian
 
 # ~~~~~~~~~~~~~~~ Spherical <=> Delaunay ~~~~~~~~~~~~~~~ #
-const SphericaltoDelaunay = CartesiantoDelaunay ∘ SphericaltoCartesian
-const DelaunaytoSpherical = CartesiantoSpherical ∘ DelaunaytoCartesian
+const SphericalToDelaunay = CartesianToDelaunay ∘ SphericalToCartesian
+const DelaunayToSpherical = CartesianToSpherical ∘ DelaunayToCartesian
 
+# ~~~~~~~~~~~~~~~ Cartesian To J2 Modified Equinoctial ~~~~~~~~~~~~~~~ #
+struct CartesianToJ2EqOETransform <: AstroCoordTransformation end
 
-# ~~~~~~~~~~~~~~~ Cartesian to J2 Modified Equinoctial ~~~~~~~~~~~~~~~ #
-struct CartesiantoJ2EqOETransform <: AstroCoordTransformation end
-
-@inline function (::CartesiantoJ2EqOETransform)(
+@inline function (::CartesianToJ2EqOETransform)(
     x::Cartesian{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return J2EqOE{RT}(cart2J2EqOE(params(x), μ))
 end
 
-const CartesiantoJ2EqOE = CartesiantoJ2EqOETransform()
+const CartesianToJ2EqOE = CartesianToJ2EqOETransform()
 
-struct J2EqOEtoCartesianTransform <: AstroCoordTransformation end
+struct J2EqOEToCartesianTransform <: AstroCoordTransformation end
 
-@inline function (::J2EqOEtoCartesianTransform)(
+@inline function (::J2EqOEToCartesianTransform)(
     x::J2EqOE{T}, μ::V
 ) where {T<:Number,V<:Number}
     RT = promote_type(T, V)
     return Cartesian{RT}(J2EqOE2cart(params(x), μ))
 end
 
-const J2EqOEtoCartesian = J2EqOEtoCartesianTransform()
+const J2EqOEToCartesian = J2EqOEToCartesianTransform()
 
-Base.inv(::J2EqOEtoCartesianTransform) = Cartesianto2EqOETransform()
-Base.inv(::CartesiantoJ2EqOETransform) = J2EqOEtoCartesianTransform()
+Base.inv(::J2EqOEToCartesianTransform) = CartesianTo2EqOETransform()
+Base.inv(::CartesianToJ2EqOETransform) = J2EqOEToCartesianTransform()
 
 # ~~~~~~~~~~~~~~~ Keplerian <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const KepleriantoJ2EqOE = CartesiantoJ2EqOE ∘ KepleriantoCartesian
-const J2EqOEtoKeplerian = CartesiantoKeplerian ∘ J2EqOEtoCartesian
+const KeplerianToJ2EqOE = CartesianToJ2EqOE ∘ KeplerianToCartesian
+const J2EqOEToKeplerian = CartesianToKeplerian ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ USM7 <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const USM7toJ2EqOE = CartesiantoJ2EqOE ∘ USM7toCartesian
-const J2EqOEtoUSM7 = CartesiantoUSM7 ∘ J2EqOEtoCartesian
+const USM7ToJ2EqOE = CartesianToJ2EqOE ∘ USM7ToCartesian
+const J2EqOEToUSM7 = CartesianToUSM7 ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ USM6 <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const USM6toJ2EqOE = CartesiantoJ2EqOE ∘ USM6toCartesian
-const J2EqOEtoUSM6 = CartesiantoUSM6 ∘ J2EqOEtoCartesian
+const USM6ToJ2EqOE = CartesianToJ2EqOE ∘ USM6ToCartesian
+const J2EqOEToUSM6 = CartesianToUSM6 ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ USMEM <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const USMEMtoJ2EqOE = CartesiantoJ2EqOE ∘ USMEMtoCartesian
-const J2EqOEtoUSMEM = CartesiantoUSMEM ∘ J2EqOEtoCartesian
+const USMEMToJ2EqOE = CartesianToJ2EqOE ∘ USMEMToCartesian
+const J2EqOEToUSMEM = CartesianToUSMEM ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ Milankovich <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const MilankovichtoJ2EqOE = CartesiantoJ2EqOE ∘ MilankovichtoCartesian
-const J2EqOEtoMilankovich = CartesiantoMilankovich ∘ J2EqOEtoCartesian
+const MilankovichToJ2EqOE = CartesianToJ2EqOE ∘ MilankovichToCartesian
+const J2EqOEToMilankovich = CartesianToMilankovich ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ Modified Equinoctial <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const ModifiedEquinoctialtoJ2EqOE = CartesiantoJ2EqOE ∘ ModifiedEquinoctialtoCartesian
-const J2EqOEtoModifiedEquinoctial = CartesiantoModifiedEquinoctial ∘ J2EqOEtoCartesian
+const ModifiedEquinoctialToJ2EqOE = CartesianToJ2EqOE ∘ ModifiedEquinoctialToCartesian
+const J2EqOEToModifiedEquinoctial = CartesianToModifiedEquinoctial ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ Cylindrical <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const CylindricaltoJ2EqOE = CartesiantoJ2EqOE ∘ CylindricaltoCartesian
-const J2EqOEtoCylindrical = CartesiantoCylindrical ∘ J2EqOEtoCartesian
+const CylindricalToJ2EqOE = CartesianToJ2EqOE ∘ CylindricalToCartesian
+const J2EqOEToCylindrical = CartesianToCylindrical ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ Spherical <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const SphericaltoJ2EqOE = CartesiantoJ2EqOE ∘ SphericaltoCartesian
-const J2EqOEtoSpherical = CartesiantoSpherical ∘ J2EqOEtoCartesian
+const SphericalToJ2EqOE = CartesianToJ2EqOE ∘ SphericalToCartesian
+const J2EqOEToSpherical = CartesianToSpherical ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~ Delaunay <=> J2EqOE ~~~~~~~~~~~~~~~ #
-const DelaunaytoJ2EqOE = CartesiantoJ2EqOE ∘ DelaunaytoCartesian
-const J2EqOEtoDelaunay = CartesiantoDelaunay ∘ J2EqOEtoCartesian
+const DelaunayToJ2EqOE = CartesianToJ2EqOE ∘ DelaunayToCartesian
+const J2EqOEToDelaunay = CartesianToDelaunay ∘ J2EqOEToCartesian
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-# ~~~~~~~~~~~~~~~ Additional Constructors ~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~ Additional ConstrucTors ~~~~~~~~~~~~~~~ #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 #TODO: NOT MAINTAINABLE
 #TODO: CAN I DO THIS WITH METAPROGRAMMING?
 # ~~~~~~~~~~~~~~~ Cartesian ~~~~~~~~~~~~~~~ #
 Cartesian(X::Cartesian{T}, μ::Number) where {T<:Number} = X
-Cartesian(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoCartesian(X, μ)
-Cartesian(X::USM7{T}, μ::Number) where {T<:Number} = USM7toCartesian(X, μ)
-Cartesian(X::USM6{T}, μ::Number) where {T<:Number} = USM6toCartesian(X, μ)
-Cartesian(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoCartesian(X, μ)
-Cartesian(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoCartesian(X, μ)
-Cartesian(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoCartesian(X, μ)
-Cartesian(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoCartesian(X, μ)
-Cartesian(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoCartesian(X, μ)
-Cartesian(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoCartesian(X, μ)
-Cartesian(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoCartesian(X, μ)
+Cartesian(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToCartesian(X, μ)
+Cartesian(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToCartesian(X, μ)
+Cartesian(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToCartesian(X, μ)
+Cartesian(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToCartesian(X, μ)
+Cartesian(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToCartesian(X, μ)
+Cartesian(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToCartesian(X, μ)
+Cartesian(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToCartesian(X, μ)
+Cartesian(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToCartesian(X, μ)
+Cartesian(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToCartesian(X, μ)
+Cartesian(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToCartesian(X, μ)
 
 # ~~~~~~~~~~~~~~~ Keplerian ~~~~~~~~~~~~~~~ #
 Keplerian(X::Keplerian{T}, μ::Number) where {T<:Number} = X
-Keplerian(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoKeplerian(X, μ)
-Keplerian(X::USM7{T}, μ::Number) where {T<:Number} = USM7toKeplerian(X, μ)
-Keplerian(X::USM6{T}, μ::Number) where {T<:Number} = USM6toKeplerian(X, μ)
-Keplerian(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoKeplerian(X, μ)
-Keplerian(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoKeplerian(X, μ)
-Keplerian(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoKeplerian(X, μ)
-Keplerian(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoKeplerian(X, μ)
-Keplerian(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoKeplerian(X, μ)
-Keplerian(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoKeplerian(X, μ)
-Keplerian(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoKeplerian(X, μ)
+Keplerian(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToKeplerian(X, μ)
+Keplerian(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToKeplerian(X, μ)
+Keplerian(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToKeplerian(X, μ)
+Keplerian(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToKeplerian(X, μ)
+Keplerian(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToKeplerian(X, μ)
+Keplerian(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToKeplerian(X, μ)
+Keplerian(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToKeplerian(X, μ)
+Keplerian(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToKeplerian(X, μ)
+Keplerian(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToKeplerian(X, μ)
+Keplerian(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToKeplerian(X, μ)
 
 # ~~~~~~~~~~~~~~~ USM7 ~~~~~~~~~~~~~~~ #
 USM7(X::USM7{T}, μ::Number) where {T<:Number} = X
-USM7(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoUSM7(X, μ)
-USM7(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoUSM7(X, μ)
-USM7(X::USM6{T}, μ::Number) where {T<:Number} = USM6toUSM7(X, μ)
-USM7(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoUSM7(X, μ)
-USM7(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoUSM7(X, μ)
-USM7(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoUSM7(X, μ)
-USM7(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoUSM7(X, μ)
-USM7(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoUSM7(X, μ)
-USM7(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoUSM7(X, μ)
-USM7(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoUSM7(X, μ)
+USM7(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToUSM7(X, μ)
+USM7(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToUSM7(X, μ)
+USM7(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToUSM7(X, μ)
+USM7(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToUSM7(X, μ)
+USM7(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToUSM7(X, μ)
+USM7(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToUSM7(X, μ)
+USM7(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToUSM7(X, μ)
+USM7(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToUSM7(X, μ)
+USM7(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToUSM7(X, μ)
+USM7(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToUSM7(X, μ)
 
 # ~~~~~~~~~~~~~~~ USM6 ~~~~~~~~~~~~~~~ #
 USM6(X::USM6{T}, μ::Number) where {T<:Number} = X
-USM6(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoUSM6(X, μ)
-USM6(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoUSM6(X, μ)
-USM6(X::USM7{T}, μ::Number) where {T<:Number} = USM7toUSM6(X, μ)
-USM6(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoUSM6(X, μ)
-USM6(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoUSM6(X, μ)
-USM6(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoUSM6(X, μ)
-USM6(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoUSM6(X, μ)
-USM6(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoUSM6(X, μ)
-USM6(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoUSM6(X, μ)
-USM6(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoUSM6(X, μ)
+USM6(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToUSM6(X, μ)
+USM6(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToUSM6(X, μ)
+USM6(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToUSM6(X, μ)
+USM6(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToUSM6(X, μ)
+USM6(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToUSM6(X, μ)
+USM6(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToUSM6(X, μ)
+USM6(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToUSM6(X, μ)
+USM6(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToUSM6(X, μ)
+USM6(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToUSM6(X, μ)
+USM6(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToUSM6(X, μ)
 
 # ~~~~~~~~~~~~~~~ USMEM ~~~~~~~~~~~~~~~ #
 USMEM(X::USMEM{T}, μ::Number) where {T<:Number} = X
-USMEM(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoUSMEM(X, μ)
-USMEM(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoUSMEM(X, μ)
-USMEM(X::USM7{T}, μ::Number) where {T<:Number} = USM7toUSMEM(X, μ)
-USMEM(X::USM6{T}, μ::Number) where {T<:Number} = USM6toUSMEM(X, μ)
-USMEM(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoUSMEM(X, μ)
-USMEM(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoUSMEM(X, μ)
-USMEM(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoUSMEM(X, μ)
-USMEM(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoUSMEM(X, μ)
-USMEM(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoUSMEM(X, μ)
-USMEM(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoUSMEM(X, μ)
+USMEM(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToUSMEM(X, μ)
+USMEM(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToUSMEM(X, μ)
+USMEM(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToUSMEM(X, μ)
+USMEM(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToUSMEM(X, μ)
+USMEM(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToUSMEM(X, μ)
+USMEM(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToUSMEM(X, μ)
+USMEM(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToUSMEM(X, μ)
+USMEM(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToUSMEM(X, μ)
+USMEM(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToUSMEM(X, μ)
+USMEM(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToUSMEM(X, μ)
 
 # ~~~~~~~~~~~~~~~ Milankovich ~~~~~~~~~~~~~~~ #
 Milankovich(X::Milankovich{T}, μ::Number) where {T<:Number} = X
-Milankovich(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoMilankovich(X, μ)
-Milankovich(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoMilankovich(X, μ)
-Milankovich(X::USM7{T}, μ::Number) where {T<:Number} = USM7toMilankovich(X, μ)
-Milankovich(X::USM6{T}, μ::Number) where {T<:Number} = USM6toMilankovich(X, μ)
-Milankovich(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoMilankovich(X, μ)
+Milankovich(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToMilankovich(X, μ)
+Milankovich(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToMilankovich(X, μ)
+Milankovich(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToMilankovich(X, μ)
+Milankovich(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToMilankovich(X, μ)
+Milankovich(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToMilankovich(X, μ)
 function Milankovich(X::ModEq{T}, μ::Number) where {T<:Number}
-    return ModifiedEquinoctialtoMilankovich(X, μ)
+    return ModifiedEquinoctialToMilankovich(X, μ)
 end
-Milankovich(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoMilankovich(X, μ)
-Milankovich(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoMilankovich(X, μ)
-Milankovich(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoMilankovich(X, μ)
-Milankovich(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoMilankovich(X, μ)
+Milankovich(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToMilankovich(X, μ)
+Milankovich(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToMilankovich(X, μ)
+Milankovich(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToMilankovich(X, μ)
+Milankovich(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToMilankovich(X, μ)
 
 # ~~~~~~~~~~~~~~~ ModEq ~~~~~~~~~~~~~~~ #
 ModEq(X::ModEq{T}, μ::Number) where {T<:Number} = X
-ModEq(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoModifiedEquinoctial(X, μ)
-ModEq(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoModifiedEquinoctial(X, μ)
-ModEq(X::USM7{T}, μ::Number) where {T<:Number} = USM7toModifiedEquinoctial(X, μ)
-ModEq(X::USM6{T}, μ::Number) where {T<:Number} = USM6toModifiedEquinoctial(X, μ)
-ModEq(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoModifiedEquinoctial(X, μ)
+ModEq(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToModifiedEquinoctial(X, μ)
+ModEq(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToModifiedEquinoctial(X, μ)
+ModEq(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToModifiedEquinoctial(X, μ)
+ModEq(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToModifiedEquinoctial(X, μ)
+ModEq(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToModifiedEquinoctial(X, μ)
 function ModEq(X::Milankovich{T}, μ::Number) where {T<:Number}
-    return MilankovichtoModifiedEquinoctial(X, μ)
+    return MilankovichToModifiedEquinoctial(X, μ)
 end
 function ModEq(X::Cylindrical{T}, μ::Number) where {T<:Number}
-    return CylindricaltoModifiedEquinoctial(X, μ)
+    return CylindricalToModifiedEquinoctial(X, μ)
 end
-ModEq(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoModifiedEquinoctial(X, μ)
-ModEq(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoModifiedEquinoctial(X, μ)
-ModEq(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoModEq(X, μ)
+ModEq(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToModifiedEquinoctial(X, μ)
+ModEq(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToModifiedEquinoctial(X, μ)
+ModEq(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToModEq(X, μ)
 
 # ~~~~~~~~~~~~~~~ Cylindrical ~~~~~~~~~~~~~~~ #
 Cylindrical(X::Cylindrical{T}, μ::Number) where {T<:Number} = X
-Cylindrical(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoCylindrical(X, μ)
-Cylindrical(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoCylindrical(X, μ)
-Cylindrical(X::USM7{T}, μ::Number) where {T<:Number} = USM7toCylindrical(X, μ)
-Cylindrical(X::USM6{T}, μ::Number) where {T<:Number} = USM6toCylindrical(X, μ)
-Cylindrical(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoCylindrical(X, μ)
-Cylindrical(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoCylindrical(X, μ)
+Cylindrical(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToCylindrical(X, μ)
+Cylindrical(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToCylindrical(X, μ)
+Cylindrical(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToCylindrical(X, μ)
+Cylindrical(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToCylindrical(X, μ)
+Cylindrical(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToCylindrical(X, μ)
+Cylindrical(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToCylindrical(X, μ)
 function Cylindrical(X::ModEq{T}, μ::Number) where {T<:Number}
-    return ModifiedEquinoctialtoCylindrical(X, μ)
+    return ModifiedEquinoctialToCylindrical(X, μ)
 end
-Cylindrical(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoCylindrical(X, μ)
-Cylindrical(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoCylindrical(X, μ)
-Cylindrical(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoCylindrical(X, μ)
+Cylindrical(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToCylindrical(X, μ)
+Cylindrical(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToCylindrical(X, μ)
+Cylindrical(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToCylindrical(X, μ)
 
 # ~~~~~~~~~~~~~~~ Spherical ~~~~~~~~~~~~~~~ #
 Spherical(X::Spherical{T}, μ::Number) where {T<:Number} = X
-Spherical(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoSpherical(X, μ)
-Spherical(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoSpherical(X, μ)
-Spherical(X::USM7{T}, μ::Number) where {T<:Number} = USM7toSpherical(X, μ)
-Spherical(X::USM6{T}, μ::Number) where {T<:Number} = USM6toSpherical(X, μ)
-Spherical(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoSpherical(X, μ)
-Spherical(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoSpherical(X, μ)
-Spherical(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoSpherical(X, μ)
-Spherical(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoSpherical(X, μ)
-Spherical(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoSpherical(X, μ)
-Spherical(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoSpherical(X, μ)
+Spherical(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToSpherical(X, μ)
+Spherical(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToSpherical(X, μ)
+Spherical(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToSpherical(X, μ)
+Spherical(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToSpherical(X, μ)
+Spherical(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToSpherical(X, μ)
+Spherical(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToSpherical(X, μ)
+Spherical(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToSpherical(X, μ)
+Spherical(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToSpherical(X, μ)
+Spherical(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToSpherical(X, μ)
+Spherical(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToSpherical(X, μ)
 
 # ~~~~~~~~~~~~~~~ Delaunay ~~~~~~~~~~~~~~~ #
 Delaunay(X::Delaunay{T}, μ::Number) where {T<:Number} = X
-Delaunay(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoDelaunay(X, μ)
-Delaunay(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoDelaunay(X, μ)
-Delaunay(X::USM7{T}, μ::Number) where {T<:Number} = USM7toDelaunay(X, μ)
-Delaunay(X::USM6{T}, μ::Number) where {T<:Number} = USM6toDelaunay(X, μ)
-Delaunay(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoDelaunay(X, μ)
-Delaunay(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoDelaunay(X, μ)
-Delaunay(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoDelaunay(X, μ)
-Delaunay(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoDelaunay(X, μ)
-Delaunay(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoDelaunay(X, μ)
-Delaunay(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEtoDelaunay(X, μ)
+Delaunay(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToDelaunay(X, μ)
+Delaunay(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToDelaunay(X, μ)
+Delaunay(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToDelaunay(X, μ)
+Delaunay(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToDelaunay(X, μ)
+Delaunay(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToDelaunay(X, μ)
+Delaunay(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToDelaunay(X, μ)
+Delaunay(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToDelaunay(X, μ)
+Delaunay(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToDelaunay(X, μ)
+Delaunay(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToDelaunay(X, μ)
+Delaunay(X::J2EqOE{T}, μ::Number) where {T<:Number} = J2EqOEToDelaunay(X, μ)
 
 # ~~~~~~~~~~~~~~~ J2EqOE ~~~~~~~~~~~~~~~ #
 J2EqOE(X::J2EqOE{T}, μ::Number) where {T<:Number} = X
-J2EqOE(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesiantoJ2EqOE(X, μ)
-J2EqOE(X::Keplerian{T}, μ::Number) where {T<:Number} = KepleriantoJ2EqOE(X, μ)
-J2EqOE(X::USM7{T}, μ::Number) where {T<:Number} = USM7toJ2EqOE(X, μ)
-J2EqOE(X::USM6{T}, μ::Number) where {T<:Number} = USM6toJ2EqOE(X, μ)
-J2EqOE(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMtoJ2EqOE(X, μ)
-J2EqOE(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichtoJ2EqOE(X, μ)
-J2EqOE(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialtoJ2EqOE(X, μ)
-J2EqOE(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricaltoJ2EqOE(X, μ)
-J2EqOE(X::Spherical{T}, μ::Number) where {T<:Number} = SphericaltoJ2EqOE(X, μ)
-J2EqOE(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunaytoJ2EqOE(X, μ)
+J2EqOE(X::Cartesian{T}, μ::Number) where {T<:Number} = CartesianToJ2EqOE(X, μ)
+J2EqOE(X::Keplerian{T}, μ::Number) where {T<:Number} = KeplerianToJ2EqOE(X, μ)
+J2EqOE(X::USM7{T}, μ::Number) where {T<:Number} = USM7ToJ2EqOE(X, μ)
+J2EqOE(X::USM6{T}, μ::Number) where {T<:Number} = USM6ToJ2EqOE(X, μ)
+J2EqOE(X::USMEM{T}, μ::Number) where {T<:Number} = USMEMToJ2EqOE(X, μ)
+J2EqOE(X::Milankovich{T}, μ::Number) where {T<:Number} = MilankovichToJ2EqOE(X, μ)
+J2EqOE(X::ModEq{T}, μ::Number) where {T<:Number} = ModifiedEquinoctialToJ2EqOE(X, μ)
+J2EqOE(X::Cylindrical{T}, μ::Number) where {T<:Number} = CylindricalToJ2EqOE(X, μ)
+J2EqOE(X::Spherical{T}, μ::Number) where {T<:Number} = SphericalToJ2EqOE(X, μ)
+J2EqOE(X::Delaunay{T}, μ::Number) where {T<:Number} = DelaunayToJ2EqOE(X, μ)

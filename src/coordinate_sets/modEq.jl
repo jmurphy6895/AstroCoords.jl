@@ -61,7 +61,6 @@ function Base.getindex(p::ModEq{T}, i::Int) where {T<:Number}
     end
 end
 
-
 export J2EqOE
 """
     J2EqOE{T} <: AstroCoord
