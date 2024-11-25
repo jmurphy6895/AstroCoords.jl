@@ -46,4 +46,4 @@ julia> Pkg.add("AstroCoords")
 For more information, see the [documentation][docs-dev-url].
 
 [docs-dev-url]: https://jmurphy6895.github.io/AstroCoords.jl/dev/
-[docs-stable-url]: https://jmurphy6895.github.io/AstroForceCoords.jl/dev/
+[docs-stable-url]: https://jmurphy6895.github.io/AstroCoords.jl/dev/
